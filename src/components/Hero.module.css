@@ -1,11 +1,11 @@
 .heroShell {
-  background: #ffffff;
+  background: linear-gradient(135deg, #fffafc 0%, #ffffff 54%, #f5faf8 100%);
 }
 
 .promoBar {
   padding: 0.8rem 1.5rem;
   color: #ffffff;
-  background: var(--accent-gradient);
+  background: #18212f;
 }
 
 .promoBar p {
@@ -18,7 +18,7 @@
 .heroSection {
   position: relative;
   overflow: hidden;
-  padding: 5rem 1.5rem 4rem;
+  padding: 6.5rem 1.5rem 5.5rem;
 }
 
 .heroContent {
@@ -67,10 +67,12 @@
   transform: translateY(38px);
   animation: headline-in 860ms cubic-bezier(0.19, 0.82, 0.22, 1) 230ms forwards;
   color: #0e172a;
-  font-size: clamp(2.8rem, 7vw, 5.8rem);
+  max-width: 900px;
+  margin-inline: auto;
+  font-size: clamp(3.4rem, 7vw, 6.5rem);
   font-weight: 700;
   line-height: 0.98;
-  letter-spacing: -0.04em;
+  letter-spacing: 0;
 }
 
 .subline {
@@ -122,7 +124,7 @@
 
 .carouselViewport {
   width: 100%;
-  margin-top: 3.5rem;
+  margin-top: 4.5rem;
   overflow: hidden;
   position: relative;
 }
@@ -137,10 +139,10 @@
 }
 
 .characterCard {
-  min-height: 360px;
-  width: 270px;
+  min-height: 330px;
+  width: 250px;
   flex: 0 0 auto;
-  border-radius: 1rem;
+  border-radius: 12px;
   border: 1px solid rgba(15, 23, 42, 0.12);
   box-shadow: 0 28px 80px -52px rgba(15, 23, 42, 0.42);
   overflow: hidden;
@@ -148,7 +150,7 @@
 }
 
 .cardArtwork {
-  height: 150px;
+  height: 138px;
   display: flex;
   align-items: flex-end;
   padding: 1.25rem;
@@ -165,7 +167,7 @@
 .characterteal .cardArtwork { background: linear-gradient(135deg, #e6a5b9, #f2c6b0); }
 
 .cardContent {
-  min-height: 210px;
+  min-height: 192px;
   padding: 1.25rem;
   background: white;
 }

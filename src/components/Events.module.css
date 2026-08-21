@@ -1,18 +1,18 @@
 .events {
-  padding: 80px var(--spacing-lg);
-  background: var(--background);
+  padding: 96px var(--spacing-lg);
+  background: #fffdfd;
   border-top: 1px solid var(--border);
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1240px;
   margin: 0 auto;
 }
 
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 30px;
+  gap: 20px;
 }
 
 @media (max-width: 768px) {
@@ -26,14 +26,14 @@
 }
 
 .eventCard {
-  background: var(--background);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-lg);
+  background: #ffffff;
+  border: 1px solid #eadfe4;
+  border-radius: 12px;
+  padding: 1.25rem;
   display: flex;
   gap: var(--spacing-lg);
   transition: all var(--transition-base);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 12px 28px rgba(26, 26, 26, 0.06);
 }
 
 .eventCard:hover {
@@ -48,14 +48,14 @@
   gap: var(--spacing-sm);
   flex-shrink: 0;
   padding: var(--spacing-md);
-  background: var(--accent-gradient);
+  background: #18212f;
   border-radius: var(--radius-md);
   text-align: center;
   min-width: 80px;
 }
 
 .date time {
-  font-weight: 600;
+  font-weight: 700;
   color: white;
   font-size: 0.875rem;
 }
@@ -87,15 +87,15 @@
 
 .availability {
   font-size: 0.875rem;
-  color: var(--text-light);
+  color: var(--accent-green);
   font-weight: 500;
 }
 
 .bookButton {
-  background: var(--accent-gradient);
+  background: #d76591;
   color: white;
   padding: 8px 16px;
-  border-radius: var(--radius-md);
+  border-radius: 7px;
   font-weight: 600;
   text-decoration: none;
   display: inline-block;

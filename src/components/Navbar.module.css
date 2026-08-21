@@ -21,18 +21,18 @@
   z-index: 50;
   background: var(--background);
   border-bottom: 1px solid var(--border);
-  box-shadow: 0 4px 18px rgba(14, 23, 42, 0.05);
+  box-shadow: 0 8px 24px rgba(14, 23, 42, 0.06);
   transition: all var(--transition-base);
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1320px;
   margin: 0 auto;
   padding: 0 var(--spacing-lg);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 70px;
+  height: 76px;
 }
 
 .logo {
@@ -56,8 +56,8 @@
 }
 
 .logoImage {
-  width: 45px;
-  height: 45px;
+  width: 52px;
+  height: 52px;
   flex-shrink: 0;
 }
 
@@ -78,7 +78,7 @@
 .desktopNav {
   display: none;
   align-items: center;
-  gap: var(--spacing-lg);
+  gap: 1.75rem;
 }
 
 @media (min-width: 768px) {
@@ -88,7 +88,8 @@
 }
 
 .navLink {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+  font-weight: 500;
   color: var(--text);
   text-decoration: none;
   transition: color var(--transition-base);
