@@ -44,10 +44,10 @@ export const siteConfig = {
   // About Section
   about: {
     headline: "A Studio for Creative Expression.",
-    description: "Jen's Paint Cellar is a professional art studio dedicated to providing quality instruction and a welcoming space for artists of all skill levels.",
-    story: "[ADD STUDIO STORY HERE]",
-    meetJen: "[ADD JEN'S BIOGRAPHY HERE]",
-    whyPaint: "[ADD ARTISTIC PHILOSOPHY HERE]",
+    description: "Jen's Paint Cellar is a creative studio in Salem, Ohio, built around hands-on making, welcoming instruction, and time spent creating together.",
+    story: "Jen opened Jen's Paint Cellar in 2016 with a simple idea: make creativity feel approachable, social, and worth making time for. What began as a studio for refinishing furniture, paint supplies, gifts, and handmade pieces grew into a place where people gather for workshops, celebrations, and creative projects of their own.",
+    meetJen: "Jen Walter is the maker and teacher behind the Cellar. She brings experience in refinishing furniture, a love of practical handmade design, and an easygoing teaching style to every project. Whether she is guiding a first-time painter, helping a family celebrate, or developing a custom piece, Jen meets people where they are and helps them leave with something they are proud of.",
+    whyPaint: "We believe the best creative experiences are welcoming, hands-on, and personal. There is room here for beginners, curious kids, experienced makers, and anyone who simply wants a relaxed evening making something with their own hands. Jen's Paint Cellar also celebrates the work of local makers and the friendships that grow around a shared table.",
     imageAlt: "Jen's Paint Cellar Studio",
   },
   
