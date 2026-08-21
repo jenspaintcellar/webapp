@@ -137,6 +137,8 @@ h1, h2, h3, h4, h5, h6 {
 .attendee-fields legend { padding: 0 .35rem; color: var(--accent-green); font-weight: 700; }
 .remove-attendee { justify-self: end; margin-top: -.5rem; border: 0; background: transparent; color: #a33f62; font: inherit; font-size: .85rem; font-weight: 700; cursor: pointer; }
 .attendee-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.emergency-contact { padding-top: .5rem; border-top: 1px solid var(--border); }
+.emergency-contact > p { margin: 0 0 .75rem; color: var(--accent-green); font-weight: 700; }
 .waiver-check { display: flex !important; grid-template-columns: auto 1fr; grid-template-rows: auto; align-items: start; gap: .6rem !important; padding-top: .25rem; font-weight: 500 !important; }
 .waiver-check input { margin-top: .25rem; accent-color: var(--accent-green); }
 .primary-button, .secondary-button { padding: .85rem 1.1rem; border: 0; border-radius: var(--radius-md); font: inherit; font-weight: 700; cursor: pointer; }
