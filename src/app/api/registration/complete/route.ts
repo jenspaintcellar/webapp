@@ -8,7 +8,22 @@ export async function POST(request: Request) {
   const body = await request.json() as { customerId?: string; eventId?: string; email?: string; attendees?: unknown[] };
   if (!body.customerId || !body.eventId || !body.email || !Array.isArray(body.attendees)) return NextResponse.json({ error: 'Registration details are incomplete.' }, { status: 400 });
   const supabase = createClient(url, serviceKey);
-  const { data, error } = await supabase.rpc('complete_email_registration', { requested_customer_id: body.customerId, requested_event_id: body.eventId, requested_email: body.email, requested_attendees: body.attendees });
-  if (error) return NextResponse.json({ error: error.message }, { status: 400 });
-  return NextResponse.json({ bookingId: data });
+  const { data: profile } = await supabase.from('profiles').select('id, email').eq('id', body.customerId).ilike('email', body.email).single();
+  if (!profile) return NextResponse.json({ error: 'Customer lookup could not be completed.' }, { status: 403 });
+  const { data: event, error: eventError } = await supabase.from('events').select('id, price, capacity, status, starts_at').eq('id', body.eventId).eq('status', 'published').single();
+  if (eventError || !event || new Date(event.starts_at) <= new Date()) return NextResponse.json({ error: 'This class is no longer available.' }, { status: 400 });
+  const attendees = body.attendees as { first_name?: string; last_name?: string; phone?: string; waiver_accepted?: boolean }[];
+  if (!attendees.length || attendees.length > 12 || attendees.some((attendee) => !attendee.first_name?.trim() || !attendee.last_name?.trim() || !attendee.phone?.trim() || attendee.waiver_accepted !== true)) return NextResponse.json({ error: 'Every attendee needs a name, phone number, and waiver acceptance.' }, { status: 400 });
+  const { data: bookings, error: countError } = await supabase.from('bookings').select('guest_count, status').eq('event_id', body.eventId).neq('status', 'cancelled');
+  if (countError) return NextResponse.json({ error: countError.message }, { status: 400 });
+  const bookedSeats = (bookings || []).reduce((total, booking) => total + (booking.guest_count || 1), 0);
+  if (bookedSeats + attendees.length > event.capacity) return NextResponse.json({ error: 'There are not enough seats available.' }, { status: 400 });
+  const { data: booking, error: bookingError } = await supabase.from('bookings').insert({ event_id: body.eventId, customer_id: body.customerId, guest_count: attendees.length, total_amount: Number(event.price) * attendees.length, status: 'pending' }).select('id').single();
+  if (bookingError || !booking) return NextResponse.json({ error: bookingError?.message || 'Could not create reservation.' }, { status: 400 });
+  const attendeeRows = attendees.map((attendee, index) => ({ booking_id: booking.id, first_name: attendee.first_name!.trim(), last_name: attendee.last_name!.trim(), email: body.email!.trim().toLowerCase(), phone: attendee.phone!.trim(), is_primary: index === 0 }));
+  const { data: savedAttendees, error: attendeeError } = await supabase.from('booking_attendees').insert(attendeeRows).select('id');
+  if (attendeeError || !savedAttendees) return NextResponse.json({ error: attendeeError?.message || 'Could not save attendees.' }, { status: 400 });
+  const { error: waiverError } = await supabase.from('attendee_waivers').insert(savedAttendees.map((attendee) => ({ attendee_id: attendee.id })));
+  if (waiverError) return NextResponse.json({ error: waiverError.message }, { status: 400 });
+  return NextResponse.json({ bookingId: booking.id });
 }
