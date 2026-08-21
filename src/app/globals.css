@@ -121,6 +121,9 @@ h1, h2, h3, h4, h5, h6 {
 .registration-summary { margin-top: .75rem; color: var(--text-muted); }
 .registration-price { margin-top: 1rem; font-weight: 700; color: var(--accent-green); }
 .registration-form { display: grid; gap: 1.5rem; margin-top: 2.5rem; }
+.registration-progress { display: grid; grid-template-columns: repeat(4, 1fr); gap: .45rem; margin-top: 1.5rem; }
+.registration-progress span { height: .35rem; border-radius: var(--radius-full); background: #eadde3; }
+.registration-progress span.active { background: var(--accent-green); }
 .registration-section { padding: 1.25rem; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--background-alt); }
 .registration-section h2 { font-size: 1.6rem; }
 .registration-section p { margin: .25rem 0 1rem; color: var(--text-muted); font-size: .9rem; }
@@ -139,6 +142,11 @@ h1, h2, h3, h4, h5, h6 {
 .primary-button { background: var(--accent-gradient); color: #fff; }
 .primary-button:disabled { opacity: .6; cursor: wait; }
 .secondary-button { justify-self: start; background: #fff; border: 1px solid var(--border); color: var(--accent-green); }
+.registration-actions { display: flex; justify-content: space-between; gap: 1rem; align-items: center; }
+.registration-help { color: var(--text-muted); font-size: .85rem; text-align: center; }
+.registration-success { display: grid; gap: 1rem; margin-top: 2rem; padding: 1.5rem; border: 1px solid var(--mint); border-radius: var(--radius-lg); background: #f1f8f5; }
+.registration-success h2 { font-size: 1.8rem; color: #23624e; }
+.registration-success .primary-button { justify-self: start; color: #fff; text-decoration: none; }
 .registration-message { padding: 1rem; border-radius: var(--radius-md); background: #f1f8f5; color: #23624e; font-weight: 600; }
 
 @media (max-width: 600px) {
