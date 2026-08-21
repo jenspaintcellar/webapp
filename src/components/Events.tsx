@@ -3,37 +3,18 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import SectionHeading from './SectionHeading';
-import { events, hasUpcomingEvents } from '@/data/events';
+import { useEffect, useState } from 'react';
+import { getPublishedEvents, type PublishedEvent } from '@/data/published-events';
 import styles from './Events.module.css';
 
 export default function Events() {
-  if (!hasUpcomingEvents) {
-    return (
-      <section className={styles.events} id="events">
-        <div className={styles.container}>
-          <SectionHeading
-            title="Upcoming Events"
-            subtitle="Check back soon for exciting creative experiences"
-          />
-          <div className={styles.emptyState}>
-            <div className={styles.emptyIcon}>
-              <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-                <circle cx="32" cy="32" r="30" stroke="var(--accent)" strokeWidth="2" />
-                <path
-                  d="M32 16V32L42 42"
-                  stroke="var(--accent)"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </div>
-            <h3>New creative experiences are coming soon.</h3>
-            <p>Subscribe or check back for updates on our upcoming classes and events.</p>
-          </div>
-        </div>
-      </section>
-    );
-  }
+  const [events, setEvents] = useState<PublishedEvent[]>([]);
+  const [loaded, setLoaded] = useState(false);
+  const configured = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
+
+  useEffect(() => {
+    getPublishedEvents().then((data) => { setEvents(data); setLoaded(true); });
+  }, []);
 
   return (
     <section className={styles.events} id="events">
@@ -43,7 +24,14 @@ export default function Events() {
           subtitle="Join us for these special creative gatherings"
         />
 
-        <div className={styles.grid}>
+        {!configured ? <div className={styles.emptyState}>
+          <h3>Events are being connected.</h3>
+          <p>Supabase configuration is missing from this website deployment.</p>
+        </div> : !events.length && loaded ? <div className={styles.emptyState}>
+          <div className={styles.emptyIcon} aria-hidden="true">&#128197;</div>
+          <h3>New creative experiences are coming soon.</h3>
+          <p>Check back soon for upcoming classes and events.</p>
+        </div> : <div className={styles.grid}>
           {events.map((event, index) => (
             <motion.div
               key={event.id}
@@ -54,22 +42,22 @@ export default function Events() {
               viewport={{ once: true }}
             >
               <div className={styles.date}>
-                <time>{event.date}</time>
-                <span className={styles.time}>{event.time}</span>
+                <time dateTime={event.starts_at}>{new Date(event.starts_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}</time>
+                <span className={styles.time}>{new Date(event.starts_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</span>
               </div>
 
               <div className={styles.details}>
-                <h3>{event.name}</h3>
-                <p className={styles.description}>{event.description}</p>
-                <p className={styles.availability}>{event.availability}</p>
+                <h3>{event.classes?.name || 'Paint class'}</h3>
+                <p className={styles.description}>{event.classes?.description || 'Join us for a creative experience.'}</p>
+                <p className={styles.availability}>{event.spots_remaining} spots remaining</p>
 
-                <Link href={event.bookingUrl} className={styles.bookButton}>
-                  Book Now
+                <Link href={`/events/${event.id}`} className={styles.bookButton}>
+                  Register
                 </Link>
               </div>
             </motion.div>
           ))}
-        </div>
+        </div>}
       </div>
     </section>
   );
