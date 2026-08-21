@@ -12,10 +12,18 @@ export default function AuthCallbackPage() {
     if (!supabase) return;
 
     const finishSignIn = async () => {
-      const code = new URLSearchParams(window.location.search).get('code');
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get('code');
+      const intent = params.get('intent');
+      const next = params.get('next') || '/#events';
       if (code) await supabase.auth.exchangeCodeForSession(code);
-      const destination = sessionStorage.getItem('registration_destination') || '/#events';
-      router.replace(destination);
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (intent && sessionData.session) {
+        const { error } = await supabase.rpc('complete_registration', { requested_intent_id: intent });
+        if (error) sessionStorage.setItem('registration_error', error.message);
+        else sessionStorage.setItem('registration_complete', 'Your registration is confirmed and your waiver details were saved.');
+      }
+      router.replace(next);
     };
     finishSignIn();
   }, [router]);
