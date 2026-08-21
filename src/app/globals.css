@@ -121,7 +121,7 @@ h1, h2, h3, h4, h5, h6 {
 .registration-summary { margin-top: .75rem; color: var(--text-muted); }
 .registration-price { margin-top: 1rem; font-weight: 700; color: var(--accent-green); }
 .registration-form { display: grid; gap: 1.5rem; margin-top: 2.5rem; }
-.registration-progress { display: grid; grid-template-columns: repeat(4, 1fr); gap: .45rem; margin-top: 1.5rem; }
+.registration-progress { display: grid; grid-template-columns: repeat(5, 1fr); gap: .45rem; margin-top: 1.5rem; }
 .registration-progress span { height: .35rem; border-radius: var(--radius-full); background: #eadde3; }
 .registration-progress span.active { background: var(--accent-green); }
 .registration-section { padding: 1.25rem; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--background-alt); }
@@ -132,6 +132,7 @@ h1, h2, h3, h4, h5, h6 {
 .registration-form label { display: grid; gap: .4rem; color: var(--text); font-size: .9rem; font-weight: 600; }
 .registration-form input:not([type='checkbox']), .registration-form select { width: 100%; padding: .8rem .9rem; border: 1px solid #d8cbd2; border-radius: var(--radius-md); background: #fff; color: var(--text); font: inherit; }
 .registration-form input:focus, .registration-form select:focus { outline: 3px solid rgba(215, 101, 145, .2); border-color: var(--accent); }
+.registration-form input:disabled { background: #f4f1f3; color: var(--text-muted); }
 .attendee-fields { display: grid; gap: 1rem; margin-top: 1rem; padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius-md); background: #fff; }
 .attendee-fields legend { padding: 0 .35rem; color: var(--accent-green); font-weight: 700; }
 .remove-attendee { justify-self: end; margin-top: -.5rem; border: 0; background: transparent; color: #a33f62; font: inherit; font-size: .85rem; font-weight: 700; cursor: pointer; }
