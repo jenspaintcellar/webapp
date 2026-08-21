@@ -31,7 +31,7 @@ export async function POST(request: Request) {
   if (bookingError || !booking) return NextResponse.json({ error: bookingError?.message || 'Could not create reservation.' }, { status: 400 });
   const attendeeRows = attendees.map((attendee, index) => ({ booking_id: booking.id, first_name: attendee.first_name!.trim(), last_name: attendee.last_name!.trim(), email: body.email!.trim().toLowerCase(), phone: attendee.phone!.trim(), birth_date: attendee.birth_date, age: calculateAge(attendee.birth_date!), emergency_contact_name: attendee.emergency_contact_name!.trim(), emergency_contact_phone: attendee.emergency_contact_phone!.trim(), is_primary: index === 0 }));
   const { data: savedAttendees, error: attendeeError } = await supabase.from('booking_attendees').insert(attendeeRows).select('id');
-  if (attendeeError || !savedAttendees) return NextResponse.json({ error: attendeeError?.message || 'Could not save attendees.' }, { status: 400 });
+  if (attendeeError || !savedAttendees) return NextResponse.json({ error: attendeeError?.message?.includes('birth_date') ? 'The database needs the attendee birthday migration. Run supabase/migrations/20260821_attendee_age_emergency.sql, then try again.' : attendeeError?.message || 'Could not save attendees.' }, { status: 400 });
   const { error: waiverError } = await supabase.from('attendee_waivers').insert(savedAttendees.map((attendee) => ({ attendee_id: attendee.id })));
   if (waiverError) return NextResponse.json({ error: waiverError.message }, { status: 400 });
   return NextResponse.json({ bookingId: booking.id });

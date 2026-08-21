@@ -1,5 +1,6 @@
 -- Store participant age and emergency contact details.
 alter table public.booking_attendees add column if not exists age integer;
+alter table public.booking_attendees add column if not exists birth_date date;
 alter table public.booking_attendees add column if not exists emergency_contact_name text;
 alter table public.booking_attendees add column if not exists emergency_contact_phone text;
 
