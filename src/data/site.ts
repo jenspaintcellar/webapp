@@ -7,7 +7,7 @@ export const siteConfig = {
   name: "Jen's Paint Cellar",
   description: "A creative studio offering painting classes, group events, and personalized creative experiences in a welcoming, professional environment.",
   url: "https://jenspaintcellar.com",
-  ogImage: "/logo.png",
+  ogImage: "/logo.jpg",
   
   // Navigation
   navigation: [
@@ -38,7 +38,7 @@ export const siteConfig = {
   hero: {
     headline: "Create Something Beautiful.",
     subheadline: "Welcome to Jen's Paint Cellar. A professional art studio offering classes, private events, and creative experiences in downtown Salem.",
-    image: "/logo.png",
+    image: "/logo.jpg",
   },
   
   // About Section

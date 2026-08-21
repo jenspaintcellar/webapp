@@ -18,7 +18,7 @@ export default function Navbar() {
         <div className={styles.container}>
           <Link href="/" className={styles.logo} aria-label="Jen's Paint Cellar home">
             <div className={styles.logoImage}>
-              <img src="/logo.png" alt="Jen's Paint Cellar logo" />
+              <img src="/logo.jpg" alt="Jen's Paint Cellar logo" />
             </div>
             <span className={styles.logoText}>{siteConfig.name}</span>
           </Link>

@@ -20,7 +20,7 @@
 ### Static Files
 | Item | Path |
 |------|------|
-| Logo | `public/logo.png` |
+| Logo | `public/logo.jpg` |
 | Gallery images | `public/images/` |
 | Favicon | `public/favicon.ico` |
 
@@ -102,7 +102,7 @@ Add IMAGES here:
 public/images/ ← Gallery and page images
 
 Update LOGO here:
-public/logo.png ← Your brand logo
+public/logo.jpg ← Your brand logo
 ```
 
 ## Key Sections of the Website
