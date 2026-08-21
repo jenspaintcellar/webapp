@@ -31,8 +31,9 @@ export async function getPublishedEvents() {
   const events = await Promise.all((data || []).map(async (event) => {
     const classes = Array.isArray(event.classes) ? event.classes[0] || null : event.classes;
     const locations = Array.isArray(event.locations) ? event.locations[0] || null : event.locations;
-    const { data: spots } = await supabase.rpc('get_event_spots_remaining', { requested_event_id: event.id });
-    return { ...event, classes, locations, spots_remaining: spots ?? event.capacity } as unknown as PublishedEvent;
+    const { data: spots, error: spotsError } = await supabase.rpc('get_event_spots_remaining', { requested_event_id: event.id });
+    if (spotsError || spots === null) console.error('Could not load event availability:', spotsError?.message || 'No availability returned');
+    return { ...event, classes, locations, spots_remaining: spots ?? 0 } as unknown as PublishedEvent;
   }));
   return events;
 }
