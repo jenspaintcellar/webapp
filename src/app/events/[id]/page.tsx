@@ -42,7 +42,11 @@ export default function RegistrationPage() {
     if (!supabase) return setMessage('Registration is not configured yet.');
     setLoading(true); setMessage('');
     const { data: intentId, error: intentError } = await supabase.rpc('begin_registration', { requested_event_id: id, requested_email: email, requested_attendees: attendees });
-    if (intentError) { setMessage(intentError.message); setLoading(false); return; }
+    if (intentError) {
+      setMessage(intentError.message.includes('begin_registration') ? 'Registration setup is incomplete. The site administrator needs to run the latest Supabase registration migration.' : intentError.message);
+      setLoading(false);
+      return;
+    }
     const destination = `/events/${id}?registration=${intentId}`;
     sessionStorage.setItem(`registration_${id}`, JSON.stringify({ email, attendees }));
     const { error: emailError } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: `${window.location.origin}/auth/callback?intent=${intentId}&next=${encodeURIComponent(destination)}` } });
