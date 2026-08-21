@@ -28,9 +28,11 @@ export async function getPublishedEvents() {
     return [] as PublishedEvent[];
   }
 
-  return (data || []).map((event) => {
+  const events = await Promise.all((data || []).map(async (event) => {
     const classes = Array.isArray(event.classes) ? event.classes[0] || null : event.classes;
     const locations = Array.isArray(event.locations) ? event.locations[0] || null : event.locations;
-    return { ...event, classes, locations, spots_remaining: event.capacity } as unknown as PublishedEvent;
-  });
+    const { data: spots } = await supabase.rpc('get_event_spots_remaining', { requested_event_id: event.id });
+    return { ...event, classes, locations, spots_remaining: spots ?? event.capacity } as unknown as PublishedEvent;
+  }));
+  return events;
 }
