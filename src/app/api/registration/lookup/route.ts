@@ -5,7 +5,7 @@ import crypto from 'node:crypto';
 export async function POST(request: Request) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !serviceKey) return NextResponse.json({ error: 'Registration is not configured yet.' }, { status: 503 });
+  if (!url || !serviceKey) return NextResponse.json({ error: 'Email registration needs SUPABASE_SERVICE_ROLE_KEY configured on the webapp server.' }, { status: 503 });
   const { email } = await request.json() as { email?: string };
   const normalizedEmail = email?.trim().toLowerCase();
   if (!normalizedEmail || !normalizedEmail.includes('@')) return NextResponse.json({ error: 'Enter a valid email address.' }, { status: 400 });
