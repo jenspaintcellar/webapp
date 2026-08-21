@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /.next/
+
+Sitemap: https://jemspaintcellar.com/sitemap.xml

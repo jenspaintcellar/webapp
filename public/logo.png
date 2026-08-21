@@ -1,0 +1,56 @@
+<svg width="300" height="300" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Black Circle Outline -->
+  <circle cx="150" cy="150" r="145" stroke="#1A1A1A" stroke-width="8" fill="none"/>
+  
+  <!-- Pink Inner Circle -->
+  <circle cx="150" cy="150" r="130" stroke="#E8C8C0" stroke-width="6" fill="none"/>
+  
+  <!-- Background Circle Fill -->
+  <circle cx="150" cy="150" r="128" fill="#FDFBF8"/>
+  
+  <!-- Pink Blob Background -->
+  <ellipse cx="120" cy="120" rx="80" ry="70" fill="#E8C8C0" opacity="0.2"/>
+  
+  <!-- Paint Strokes (Artistic elements) -->
+  <path d="M 80 180 Q 100 170, 120 185 Q 140 200, 160 190" stroke="#E8C8C0" stroke-width="3" fill="none" opacity="0.6"/>
+  <path d="M 200 160 Q 220 150, 230 175 Q 235 195, 215 200" stroke="#E8C8C0" stroke-width="2" fill="none" opacity="0.5"/>
+  
+  <!-- Paintbrushes -->
+  <g id="brush1">
+    <!-- Handle -->
+    <rect x="110" y="80" width="8" height="45" fill="#D4A574" rx="4"/>
+    <!-- Bristles -->
+    <ellipse cx="114" cy="75" rx="12" ry="8" fill="#8B6F47"/>
+    <ellipse cx="114" cy="72" rx="8" ry="6" fill="#7A5C3A"/>
+  </g>
+  
+  <g id="brush2">
+    <!-- Handle -->
+    <rect x="140" y="70" width="8" height="50" fill="#D4A574" rx="4"/>
+    <!-- Bristles -->
+    <ellipse cx="144" cy="65" rx="14" ry="9" fill="#E8C8C0"/>
+    <ellipse cx="144" cy="62" rx="10" ry="7" fill="#D4A574"/>
+  </g>
+  
+  <g id="brush3">
+    <!-- Handle -->
+    <rect x="170" y="75" width="8" height="45" fill="#D4A574" rx="4"/>
+    <!-- Bristles -->
+    <ellipse cx="174" cy="70" rx="11" ry="8" fill="#B08960"/>
+    <ellipse cx="174" cy="67" rx="7" ry="5" fill="#9A7551"/>
+  </g>
+  
+  <!-- Pink Paint Container -->
+  <rect x="100" y="100" width="100" height="50" rx="8" fill="#E8C8C0"/>
+  <rect x="100" y="100" width="100" height="40" rx="8" fill="#F5E8E6"/>
+  
+  <!-- Text: "jem's" in handwriting style -->
+  <text x="150" y="165" font-family="cursive" font-size="48" fill="#1A1A1A" text-anchor="middle" font-style="italic">jem's</text>
+  
+  <!-- Text: "PAINT CELLAR" -->
+  <text x="150" y="205" font-family="serif" font-size="20" fill="#1A1A1A" text-anchor="middle" letter-spacing="2">PAINT CELLAR</text>
+  
+  <!-- Watercolor/Paint Splash Effect -->
+  <path d="M 220 220 Q 230 215, 235 230 Q 232 245, 215 240 Q 210 225, 220 220" fill="#E8C8C0" opacity="0.3"/>
+  <path d="M 70 240 Q 80 235, 85 250 Q 80 260, 65 255 Q 60 245, 70 240" fill="#E8C8C0" opacity="0.25"/>
+</svg>
