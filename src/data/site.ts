@@ -13,7 +13,7 @@ export const siteConfig = {
   navigation: [
     { name: "Home", href: "/" },
     { name: "About", href: "/#about" },
-    { name: "Classes", href: "/#classes" },
+    { name: "Classes", href: "/classes" },
     { name: "Events", href: "/#events" },
     { name: "Gallery", href: "/#gallery" },
     { name: "Private Events", href: "/#private-events" },
@@ -23,7 +23,7 @@ export const siteConfig = {
   // CTA Buttons
   primaryCTA: {
     text: "Explore Classes",
-    href: "/#classes",
+    href: "/classes",
   },
   secondaryCTA: {
     text: "Book a Session",
