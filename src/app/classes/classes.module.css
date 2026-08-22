@@ -1,5 +1,5 @@
 .page { min-height: 100vh; background: #fcfafb; color: #18212f; }
-.hero { padding: 7.5rem max(1.25rem, calc((100vw - 1240px) / 2)) 3rem; background: linear-gradient(118deg, #d94f70 0%, #f28b67 48%, #2f9c95 100%); color: #fff; }
+.hero { padding: 7.5rem max(1.25rem, calc((100vw - 1240px) / 2)) 3rem; background: linear-gradient(118deg, #6f7fa8 0%, #8f9cc1 48%, #b7b9d0 100%); color: #fff; }
 .heroCopy { max-width: 680px; }
 .hero .eyebrow { color: #fff3df; }
 .eyebrow { margin: 0 0 .75rem; color: #d76591; font-size: .72rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
