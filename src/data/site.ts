@@ -7,17 +7,12 @@ export const siteConfig = {
   name: "Jen's Paint Cellar",
   description: "A creative studio offering painting classes, group events, and personalized creative experiences in a welcoming, professional environment.",
   url: "https://jenspaintcellar.com",
-  ogImage: "/logo.jpg",
+  ogImage: "/logo.png",
   
   // Navigation
   navigation: [
     { name: "Home", href: "/" },
-    { name: "About", href: "/#about" },
     { name: "Classes", href: "/classes" },
-    { name: "Events", href: "/#events" },
-    { name: "Gallery", href: "/#gallery" },
-    { name: "Private Events", href: "/#private-events" },
-    { name: "Contact", href: "/#contact" },
   ],
   
   // CTA Buttons
@@ -26,19 +21,19 @@ export const siteConfig = {
     href: "/classes",
   },
   secondaryCTA: {
-    text: "Book a Session",
-    href: "/#contact",
+    text: "Find a Class",
+    href: "/",
   },
   bookNowCTA: {
-    text: "Book Now",
-    href: "/#contact",
+    text: "Find a Class",
+    href: "/",
   },
   
   // Hero Section
   hero: {
     headline: "Create Something Beautiful.",
     subheadline: "Welcome to Jen's Paint Cellar. A professional art studio offering classes, private events, and creative experiences in downtown Salem.",
-    image: "/logo.jpg",
+    image: "/logo.png",
   },
   
   // About Section
