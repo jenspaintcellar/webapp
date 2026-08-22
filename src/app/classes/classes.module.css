@@ -1,6 +1,7 @@
 .page { min-height: 100vh; background: #fcfafb; color: #18212f; }
-.hero { padding: 7.5rem max(1.25rem, calc((100vw - 1240px) / 2)) 3rem; background: linear-gradient(135deg, #18212f 0%, #263848 58%, #496b68 100%); color: #fff; }
+.hero { padding: 7.5rem max(1.25rem, calc((100vw - 1240px) / 2)) 3rem; background: linear-gradient(118deg, #d94f70 0%, #f28b67 48%, #2f9c95 100%); color: #fff; }
 .heroCopy { max-width: 680px; }
+.hero .eyebrow { color: #fff3df; }
 .eyebrow { margin: 0 0 .75rem; color: #d76591; font-size: .72rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
 .hero h1 { max-width: 700px; margin: 0; color: #fff; font-family: var(--font-handwriting); font-size: clamp(3.4rem, 7vw, 6rem); font-weight: 700; line-height: .94; letter-spacing: 0; }
 .heroCopy > p:last-child { max-width: 590px; margin: 1.5rem 0 0; color: #d9e0e6; font-size: 1.08rem; line-height: 1.7; }
