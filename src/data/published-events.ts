@@ -6,8 +6,9 @@ export type PublishedEvent = {
   ends_at: string;
   capacity: number;
   price: number;
-  classes: { name: string; description: string | null } | null;
+  classes: { name: string; description: string | null; audience: 'all_ages' | 'adults' | 'family' } | null;
   locations: { name: string; city: string } | null;
+  audience?: 'all_ages' | 'adults' | 'family' | null;
   bookings?: { guest_count: number | null; status: string }[];
   spots_remaining?: number;
 };
@@ -18,7 +19,7 @@ export async function getPublishedEvents() {
 
   const { data, error } = await supabase
     .from('events')
-    .select('id, starts_at, ends_at, capacity, price, classes(name, description), locations(name, city)')
+    .select('id, starts_at, ends_at, capacity, price, audience, classes(name, description, audience), locations(name, city)')
     .eq('status', 'published')
     .gte('starts_at', new Date().toISOString())
     .order('starts_at', { ascending: true });
