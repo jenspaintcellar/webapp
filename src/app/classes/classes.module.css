@@ -2,7 +2,7 @@
 .hero { padding: 7.5rem max(1.25rem, calc((100vw - 1240px) / 2)) 3rem; background: linear-gradient(135deg, #18212f 0%, #263848 58%, #496b68 100%); color: #fff; }
 .heroCopy { max-width: 680px; }
 .eyebrow { margin: 0 0 .75rem; color: #d76591; font-size: .72rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
-.hero h1 { max-width: 700px; margin: 0; color: #fff; font-family: var(--font-handwriting); font-size: clamp(3.6rem, 8vw, 7rem); font-weight: 700; line-height: .9; letter-spacing: 0; }
+.hero h1 { max-width: 700px; margin: 0; color: #fff; font-family: var(--font-handwriting); font-size: clamp(3.4rem, 7vw, 6rem); font-weight: 700; line-height: .94; letter-spacing: 0; }
 .heroCopy > p:last-child { max-width: 590px; margin: 1.5rem 0 0; color: #d9e0e6; font-size: 1.08rem; line-height: 1.7; }
 .searchPanel { display: grid; grid-template-columns: 1.5fr 1fr auto; align-items: end; max-width: 820px; margin-top: 3rem; padding: .55rem .65rem .55rem 1.25rem; gap: 1rem; background: #fff; border-radius: 14px; box-shadow: 0 20px 50px rgba(0,0,0,.2); color: #18212f; }
 .searchPanel label { display: grid; gap: .2rem; min-width: 0; border-right: 1px solid #e5e0e4; padding-right: 1rem; }
@@ -13,7 +13,7 @@
 .sectionHeader, .resultsHeader, .controls, .cardMeta, .cardFooter, .trust { display: flex; align-items: center; }
 .sectionHeader { justify-content: space-between; gap: 1rem; }
 .resultCount { color: #65717e; font-size: .88rem; font-weight: 700; }
-.sectionHeader h2, .resultsHeader h2 { margin: 0; font-size: 2.25rem; letter-spacing: 0; }
+.sectionHeader h2, .resultsHeader h2 { margin: 0; font-size: 1.9rem; letter-spacing: 0; }
 .controls { gap: 1rem; color: #65717e; font-size: .88rem; }
 .controls button, .empty button { display: inline-flex; align-items: center; gap: .45rem; padding: .65rem .9rem; border: 1px solid #ded6db; border-radius: 8px; background: #fff; color: #18212f; font: inherit; font-weight: 700; }
 .categories { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2.5rem; }
