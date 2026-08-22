@@ -5,7 +5,7 @@
 ```
 jen-paint-cellar/
 ├── public/                    # Static files served directly
-│   ├── logo.jpg              # Brand logo
+│   ├── logo.png              # Brand logo
 │   ├── robots.txt            # SEO: Search engine crawling rules
 │   ├── sitemap.xml           # SEO: Site map for indexing
 │   ├── images/               # Gallery and page images
@@ -84,7 +84,7 @@ Each component has a `.tsx` (React) file and `.module.css` (styling):
 - Most customization should be in `src/data/` instead
 
 ### `public/` - Images and Static Files
-- Logo: `public/logo.jpg` - Brand logo
+- Logo: `public/logo.png` - Brand logo
 - Images: `public/images/` - Add all your photos here
 - SEO: `robots.txt` and `sitemap.xml`
 

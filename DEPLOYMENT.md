@@ -100,7 +100,7 @@ Your Jen's Paint Cellar website is production-ready. Follow this guide to deploy
 - [ ] Update business name in `src/data/site.ts`
 - [ ] Update address, phone, email, hours
 - [ ] Add social media links
-- [ ] Replace `public/logo.jpg` with actual logo
+- [ ] Replace `public/logo.png` with actual logo
 - [ ] Add all images to `public/images/`
 - [ ] Update image paths in data files
 - [ ] Add testimonials (or leave empty - section hides)

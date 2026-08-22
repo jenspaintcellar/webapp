@@ -142,7 +142,7 @@ vercel
 ### Next Steps for Business Owner
 
 1. **Replace Logo**
-   - Save your actual logo as `public/logo.jpg`
+   - Save your actual logo as `public/logo.png`
 
 2. **Add Images**
    - Create folder `public/images/`
