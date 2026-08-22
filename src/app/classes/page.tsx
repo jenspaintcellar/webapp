@@ -6,6 +6,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { getPublishedEvents, type PublishedEvent } from '@/data/published-events';
 import styles from './classes.module.css';
 
+const eventImages = [
+  'https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=900&q=85',
+  'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&w=900&q=85',
+  'https://images.unsplash.com/photo-1547891654-e66ed7ebb968?auto=format&fit=crop&w=900&q=85',
+];
+
 function eventTitle(event: PublishedEvent) { return event.classes?.name || 'Paint class'; }
 
 export default function ClassesPage() {
@@ -30,7 +36,7 @@ export default function ClassesPage() {
     </section>
     <section className={styles.content}>
       <div className={styles.sectionHeader}><div><p className={styles.eyebrow}>Explore</p><h2>Upcoming experiences</h2></div><span className={styles.resultCount}>{filteredEvents.length} available</span></div>
-      {!filteredEvents.length ? <div className={styles.empty}><Search size={25} /><h3>No experiences match that search.</h3><p>Try another search or choose any date.</p><button type="button" onClick={() => { setQuery(''); setWhen('all'); }}>Clear search</button></div> : <div className={styles.grid}>{filteredEvents.map((event) => <article className={styles.card} key={event.id}><div className={styles.eventCardTop}><span className={styles.dateBadge}><CalendarDays size={14} />{new Date(event.starts_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}</span><span className={styles.cardMeta}>{event.spots_remaining} spots</span></div><div className={styles.cardBody}><p className={styles.cardMeta}>{new Date(event.starts_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</p><h3>{eventTitle(event)}</h3><p>{event.classes?.description || 'A guided creative experience for all skill levels.'}</p><div className={styles.cardFooter}><span><MapPin size={14} />{event.locations?.name || 'Salem studio'}</span><Link href={`/events/${event.id}`}>View details</Link></div></div></article>)}</div>}
+      {!filteredEvents.length ? <div className={styles.empty}><Search size={25} /><h3>No experiences match that search.</h3><p>Try another search or choose any date.</p><button type="button" onClick={() => { setQuery(''); setWhen('all'); }}>Clear search</button></div> : <div className={styles.grid}>{filteredEvents.map((event, index) => <article className={styles.card} key={event.id}><div className={styles.imageWrap}><img src={eventImages[index % eventImages.length]} alt="" /><span className={styles.dateBadge}><CalendarDays size={14} />{new Date(event.starts_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}</span></div><div className={styles.eventCardTop}><span className={styles.cardMeta}>{new Date(event.starts_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</span><span className={styles.cardMeta}>{event.spots_remaining} spots</span></div><div className={styles.cardBody}><h3>{eventTitle(event)}</h3><p>{event.classes?.description || 'A guided creative experience for all skill levels.'}</p><div className={styles.cardFooter}><span><MapPin size={14} />{event.locations?.name || 'Salem studio'}</span><Link href={`/events/${event.id}`}>View details</Link></div></div></article>)}</div>}
     </section>
   </main>;
 }
