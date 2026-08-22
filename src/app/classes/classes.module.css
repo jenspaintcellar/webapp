@@ -12,6 +12,7 @@
 .content { max-width: 1240px; margin: 0 auto; padding: 4.5rem 1.25rem 6rem; }
 .sectionHeader, .resultsHeader, .controls, .cardMeta, .cardFooter, .trust { display: flex; align-items: center; }
 .sectionHeader { justify-content: space-between; gap: 1rem; }
+.resultCount { color: #65717e; font-size: .88rem; font-weight: 700; }
 .sectionHeader h2, .resultsHeader h2 { margin: 0; font-size: 2.25rem; letter-spacing: 0; }
 .controls { gap: 1rem; color: #65717e; font-size: .88rem; }
 .controls button, .empty button { display: inline-flex; align-items: center; gap: .45rem; padding: .65rem .9rem; border: 1px solid #ded6db; border-radius: 8px; background: #fff; color: #18212f; font: inherit; font-weight: 700; }
@@ -26,6 +27,8 @@
 .card { overflow: hidden; border: 1px solid #e7dfe4; border-radius: 10px; background: #fff; box-shadow: 0 12px 30px rgba(24,33,47,.06); transition: transform .25s ease, box-shadow .25s ease; }
 .card:hover { transform: translateY(-4px); box-shadow: 0 18px 34px rgba(24,33,47,.12); }
 .imageWrap { position: relative; height: 210px; overflow: hidden; background: #e9d6df; }
+.eventCardTop { display: flex; align-items: center; justify-content: space-between; min-height: 64px; padding: .8rem 1.15rem 0; }
+.eventCardTop .dateBadge { position: static; }
 .dateBadge { position: absolute; left: .8rem; top: .8rem; display: inline-flex; align-items: center; gap: .35rem; padding: .45rem .65rem; border-radius: 7px; background: rgba(255,255,255,.94); color: #18212f; font-size: .78rem; font-weight: 800; }
 .cardBody { padding: 1.15rem; }
 .cardMeta { justify-content: space-between; color: #d76591; font-size: .78rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; }
