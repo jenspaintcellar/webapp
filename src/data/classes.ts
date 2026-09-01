@@ -35,7 +35,7 @@ export const classExperiences: ClassExperience[] = [
     description: "One-on-one personalized painting instruction tailored to your skill level and creative goals.",
     image: "/images/class-3.jpg",
     imageAlt: "Private painting lesson",
-    learnMoreUrl: "#private-events",
+    learnMoreUrl: "/contact",
   },
   {
     id: "open-studio",

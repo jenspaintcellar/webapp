@@ -8,9 +8,11 @@ import { siteConfig } from '@/data/site';
 export const metadata: Metadata = {
   title: `${siteConfig.name} | Create Something Beautiful`,
   description: siteConfig.description,
-  keywords: ['painting', 'art classes', 'creative studio', 'paint', 'art experience'],
+  keywords: ['painting classes Salem Ohio', 'art classes Salem Ohio', 'creative studio Salem Ohio', 'private painting events', 'Jen\'s Paint Cellar'],
   authors: [{ name: "Jen's Paint Cellar" }],
+  creator: "Jen's Paint Cellar",
   metadataBase: new URL(siteConfig.url),
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1, 'max-video-preview': -1 } },
   openGraph: {
     type: 'website',
     locale: 'en_US',
@@ -34,7 +36,7 @@ export const metadata: Metadata = {
     images: [siteConfig.ogImage],
   },
   icons: {
-    icon: '/logo.png',
+    icon: '/favicon.ico',
     apple: '/logo.png',
   },
 };
@@ -44,7 +46,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <head>
         <meta name="theme-color" content="#d878a1" />
-        <link rel="canonical" href={siteConfig.url} />
       </head>
       <body style={{ margin: 0, padding: 0 }}>
         <StructuredData />

@@ -1,6 +1,7 @@
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
+import { finalizeBookingFromSession } from '@/lib/finalizeBooking';
 
 export async function POST(request: Request) {
   const secret = process.env.STRIPE_SECRET_KEY;
@@ -13,12 +14,15 @@ export async function POST(request: Request) {
   const stripe = new Stripe(secret);
   let event: Stripe.Event;
   try { event = stripe.webhooks.constructEvent(await request.text(), signature, webhookSecret); } catch { return NextResponse.json({ error: 'Invalid Stripe signature.' }, { status: 400 }); }
+
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session;
-    const bookingId = session.metadata?.booking_id;
-    if (bookingId) {
+    if (session.payment_status === 'paid') {
       const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, serviceKey);
-      await supabase.from('bookings').update({ payment_status: 'paid', status: 'confirmed' }).eq('id', bookingId).eq('payment_status', 'pending');
+      try { await finalizeBookingFromSession(supabase, stripe, session); } catch (err) {
+        console.error('Could not finalize booking from webhook:', err instanceof Error ? err.message : 'Unknown error');
+        return NextResponse.json({ error: 'Could not finalize booking.' }, { status: 503 });
+      }
     }
   }
   return NextResponse.json({ received: true });

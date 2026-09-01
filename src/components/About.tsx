@@ -1,72 +1,46 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import SectionHeading from './SectionHeading';
 import { siteConfig } from '@/data/site';
 import styles from './About.module.css';
 
 export default function About() {
   return (
-    <section className={styles.about} id="about">
-      <div className={styles.container}>
-        <SectionHeading title={siteConfig.about.headline} />
+    <>
+      <section className={styles.hero} id="about">
+        <motion.div className={styles.heroPanel} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
+          <p className={styles.eyebrow}>Jen&apos;s Paint Cellar</p>
+          <h1>A welcoming place to make something meaningful.</h1>
+          <p>{siteConfig.about.description}</p>
+        </motion.div>
+      </section>
 
-        <div className={styles.content}>
-          <motion.div
-            className={styles.textColumn}
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <div className={styles.section}>
-              <h3>Our Story</h3>
-              <p>{siteConfig.about.story}</p>
-            </div>
-
-            <div className={styles.section}>
-              <h3>Meet Jen</h3>
-              <p>{siteConfig.about.meetJen}</p>
-            </div>
-
-            <div className={styles.section}>
-              <h3>What We Believe</h3>
-              <p>{siteConfig.about.whyPaint}</p>
+      <section className={styles.story}>
+        <div className={styles.container}>
+          <motion.div className={styles.imageColumn} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.55 }} viewport={{ once: true }}>
+            <div className={styles.studioPanel} role="img" aria-label={siteConfig.about.imageAlt}>
+              <span>JP</span>
+              <p>Jen&apos;s Paint Cellar</p>
+              <small>Salem, Ohio</small>
             </div>
           </motion.div>
-
-          <motion.div
-            className={styles.imageColumn}
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <div className={styles.imagePlaceholder}>
-              <div className={styles.placeholderContent}>
-                <svg
-                  width="80"
-                  height="80"
-                  viewBox="0 0 80 80"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <rect width="80" height="80" fill="var(--pink-light)" />
-                  <path
-                    d="M40 30L50 50H30L40 30Z"
-                    fill="var(--accent)"
-                    opacity="0.6"
-                  />
-                  <circle cx="35" cy="45" r="3" fill="var(--accent)" />
-                  <circle cx="45" cy="45" r="3" fill="var(--accent)" />
-                </svg>
-                <p>Studio Photo</p>
-                <small>[REPLACE WITH ACTUAL IMAGE]</small>
-              </div>
-            </div>
+          <motion.div className={styles.copyColumn} initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.55 }} viewport={{ once: true }}>
+            <p className={styles.kicker}>The Cellar story</p>
+            <h2>Creative experiences, thoughtfully hosted.</h2>
+            <p>{siteConfig.about.story}</p>
+            <h3>Meet Jen</h3>
+            <p>{siteConfig.about.meetJen}</p>
           </motion.div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      <section className={styles.promise}>
+        <div className={styles.container}>
+          <p className={styles.kicker}>Our approach</p>
+          <h2>Everyone deserves a seat at the creative table.</h2>
+          <p>{siteConfig.about.whyPaint}</p>
+        </div>
+      </section>
+    </>
   );
 }

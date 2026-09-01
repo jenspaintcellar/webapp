@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin/
 Disallow: /.next/
 
-Sitemap: https://jemspaintcellar.com/sitemap.xml
+Sitemap: https://jenspaintcellar.com/sitemap.xml

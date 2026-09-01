@@ -1,0 +1,12 @@
+.page { padding: 6rem max(1.25rem, calc((100vw - 900px) / 2)) 5rem; background: #fff; color: #18212f; }
+.updated { margin: -0.5rem 0 2.5rem; text-align: center; color: #65717e; font-size: 0.85rem; }
+.content { display: grid; gap: 2rem; }
+.content h2 { margin: 0 0 0.75rem; font-size: 1.35rem; letter-spacing: 0; color: #18212f; }
+.content p { margin: 0 0 0.75rem; color: #536176; font-size: 0.98rem; line-height: 1.7; }
+.content ul { margin: 0 0 0.75rem; padding-left: 1.25rem; color: #536176; font-size: 0.98rem; line-height: 1.7; }
+.content li { margin-bottom: 0.4rem; }
+.content a { color: #d76591; font-weight: 700; }
+
+@media (max-width: 700px) {
+  .page { padding: 4rem 1.25rem 3.5rem; }
+}

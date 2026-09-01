@@ -12,7 +12,7 @@
 
 .content {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
   gap: 40px;
   margin-bottom: 40px;
 }
@@ -42,7 +42,8 @@
 }
 
 .nav h4,
-.contact h4 {
+.contact h4,
+.social h4 {
   font-size: 1rem;
   font-weight: 600;
   color: white;
@@ -76,6 +77,33 @@
   line-height: 1.6;
 }
 
+.socialIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  color: #fff;
+}
+
+.socialIcon:hover {
+  border-color: #fff;
+  background: #1877f2;
+  color: #fff;
+}
+
+.socialIcon:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+.socialIcon svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
 .bottom {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding-top: 30px;
@@ -84,6 +112,24 @@
   align-items: center;
   flex-wrap: wrap;
   gap: var(--spacing-lg);
+}
+
+.legalLinks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.25rem;
+}
+
+.legalLinks a {
+  color: #AAA;
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: color var(--transition-base);
+}
+
+.legalLinks a:hover {
+  color: #7ee1ca;
 }
 
 @media (max-width: 480px) {
@@ -95,11 +141,6 @@
 }
 
 .copyright {
-  font-size: 0.85rem;
-  color: #666;
-}
-
-.credits {
   font-size: 0.85rem;
   color: #666;
 }

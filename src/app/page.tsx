@@ -1,5 +1,10 @@
-import ClassesPage from './classes/page';
+import ClassIndex from '@/components/ClassIndex';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  alternates: { canonical: '/' },
+};
 
 export default function Home() {
-  return <ClassesPage />;
+  return <ClassIndex />;
 }

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import SectionHeading from './SectionHeading';
+import { Mail, MapPin, Phone, Send } from 'lucide-react';
 import { siteConfig } from '@/data/site';
 import styles from './Contact.module.css';
 
@@ -22,6 +22,7 @@ export default function Contact() {
     phone: '',
     inquiryType: 'General Question',
     message: '',
+    website: '',
   });
 
   const [submitted, setSubmitted] = useState(false);
@@ -32,26 +33,29 @@ export default function Contact() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // In production, this would send to a backend service
-    console.log('Form submitted:', formData);
+    if (formData.website) return;
+    const subject = `${formData.inquiryType} from ${formData.name}`;
+    const message = `Name: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone || 'Not provided'}\n\n${formData.message}`;
+    window.location.href = `mailto:${siteConfig.contact.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
     setSubmitted(true);
-    setTimeout(() => {
-      setFormData({ name: '', email: '', phone: '', inquiryType: 'General Question', message: '' });
-      setSubmitted(false);
-    }, 3000);
   };
 
   return (
-    <section className={styles.contact} id="contact">
-      <div className={styles.container}>
-        <SectionHeading
-          title="Get In Touch"
-          subtitle="We'd love to hear from you. Reach out with questions or to book an experience."
-        />
+    <>
+      <section className={styles.hero} id="contact">
+        <motion.div className={styles.heroPanel} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
+          <p className={styles.eyebrow}>Contact Jen&apos;s Paint Cellar</p>
+          <h1>Let&apos;s plan something creative.</h1>
+          <p>Questions about classes, private events, or a project idea? Reach out and we&apos;ll help you find the right next step.</p>
+        </motion.div>
+      </section>
 
-        <div className={styles.content}>
+      <section className={styles.contact}>
+        <div className={styles.container}>
+          <div className={styles.sectionIntro}><p className={styles.kicker}>Get in touch</p><h2>We&apos;d love to hear from you.</h2></div>
+          <div className={styles.content}>
           <motion.div
             className={styles.info}
             initial={{ opacity: 0, x: -20 }}
@@ -59,55 +63,12 @@ export default function Contact() {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <div className={styles.infoGroup}>
-              <h3>Contact Information</h3>
-              <div className={styles.infoItem}>
-                <span className={styles.label}>Address</span>
-                <p>{siteConfig.contact.address}</p>
-              </div>
-              <div className={styles.infoItem}>
-                <span className={styles.label}>Phone</span>
-                <a href={`tel:${siteConfig.contact.phone}`}>{siteConfig.contact.phone}</a>
-              </div>
-              <div className={styles.infoItem}>
-                <span className={styles.label}>Email</span>
-                <a href={`mailto:${siteConfig.contact.email}`}>{siteConfig.contact.email}</a>
-              </div>
-              <div className={styles.infoItem}>
-                <span className={styles.label}>Hours</span>
-                <p>{siteConfig.contact.hours}</p>
-              </div>
+            <div className={styles.infoGroup}><h3>Contact information</h3>
+              <a className={styles.infoItem} href={`tel:${siteConfig.contact.phone}`}><Phone size={19} aria-hidden="true" /><span><small>Call the studio</small>{siteConfig.contact.phone}</span></a>
+              <a className={styles.infoItem} href={`mailto:${siteConfig.contact.email}`}><Mail size={19} aria-hidden="true" /><span><small>Email</small>{siteConfig.contact.email}</span></a>
+              <div className={styles.infoItem}><MapPin size={19} aria-hidden="true" /><span><small>Visit</small>{siteConfig.contact.address}</span></div>
             </div>
-
-            <div className={styles.socialGroup}>
-              <h3>Follow Us</h3>
-              <div className={styles.socialLinks}>
-                {siteConfig.contact.social.instagram !== '[INSTAGRAM URL]' && (
-                  <a
-                    href={siteConfig.contact.social.instagram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.socialLink}
-                  >
-                    Instagram
-                  </a>
-                )}
-                {siteConfig.contact.social.facebook !== '[FACEBOOK URL]' && (
-                  <a
-                    href={siteConfig.contact.social.facebook}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.socialLink}
-                  >
-                    Facebook
-                  </a>
-                )}
-                {siteConfig.contact.social.instagram === '[INSTAGRAM URL]' &&
-                  siteConfig.contact.social.facebook === '[FACEBOOK URL]' && (
-                    <p className={styles.placeholder}>Social links coming soon</p>
-                  )}
-              </div>
-            </div>
+            <div className={styles.note}><h3>A personal note from Jen</h3><p>Whether you&apos;re joining your first class or planning a celebration, every gathering starts with a conversation.</p></div>
           </motion.div>
 
           <motion.form
@@ -118,8 +79,10 @@ export default function Contact() {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <div className={styles.formGroup}>
-              <label htmlFor="name">Name (Required)</label>
+            <div className={styles.formHeader}><h3>Send a message</h3><p>Your message opens in your email app, so your details are never stored on this website.</p></div>
+            <input className={styles.botTrap} type="text" name="website" value={formData.website} onChange={handleChange} tabIndex={-1} autoComplete="off" aria-hidden="true" />
+            <div className={`${styles.formGroup} ${styles.messageGroup}`}>
+              <label htmlFor="name">Name</label>
               <input
                 type="text"
                 id="name"
@@ -127,11 +90,13 @@ export default function Contact() {
                 value={formData.name}
                 onChange={handleChange}
                 required
+                autoComplete="name"
+                maxLength={100}
               />
             </div>
 
             <div className={styles.formGroup}>
-              <label htmlFor="email">Email (Required)</label>
+              <label htmlFor="email">Email</label>
               <input
                 type="email"
                 id="email"
@@ -139,6 +104,8 @@ export default function Contact() {
                 value={formData.email}
                 onChange={handleChange}
                 required
+                autoComplete="email"
+                maxLength={254}
               />
             </div>
 
@@ -150,6 +117,8 @@ export default function Contact() {
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
+                autoComplete="tel"
+                maxLength={30}
               />
             </div>
 
@@ -178,6 +147,7 @@ export default function Contact() {
                 onChange={handleChange}
                 required
                 rows={5}
+                maxLength={2000}
               />
             </div>
 
@@ -186,11 +156,14 @@ export default function Contact() {
               className={styles.submitButton}
               disabled={submitted}
             >
-              {submitted ? 'Message Sent' : 'Send Message'}
+              <Send size={17} aria-hidden="true" />
+              {submitted ? 'Email app opened' : 'Continue to email'}
             </button>
+            {submitted && <p className={styles.submitted} role="status">Review and send the message in your email app to reach Jen&apos;s Paint Cellar.</p>}
           </motion.form>
         </div>
       </div>
-    </section>
+      </section>
+    </>
   );
 }

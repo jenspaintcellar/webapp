@@ -12,21 +12,22 @@ export const siteConfig = {
   // Navigation
   navigation: [
     { name: "Home", href: "/" },
-    { name: "Classes", href: "/classes" },
+    { name: "About", href: "/about" },
+    { name: "Shop", href: "/shop" },
   ],
   
   // CTA Buttons
   primaryCTA: {
     text: "Explore Classes",
-    href: "/classes",
+    href: "/",
   },
   secondaryCTA: {
     text: "Find a Class",
     href: "/",
   },
   bookNowCTA: {
-    text: "Find a Class",
-    href: "/",
+    text: "Schedule an Event",
+    href: "/classes",
   },
   
   // Hero Section
@@ -50,11 +51,11 @@ export const siteConfig = {
   contact: {
     address: "435 E. State St., Salem, OH 44460",
     phone: "(330) 831-2594",
-    email: "[EMAIL]",
+    email: "support@jenspaintcellar.com",
     hours: "[BUSINESS HOURS]",
     social: {
       instagram: "[INSTAGRAM URL]",
-      facebook: "[FACEBOOK URL]",
+      facebook: "https://www.facebook.com/paintcellar/",
     },
   },
   
