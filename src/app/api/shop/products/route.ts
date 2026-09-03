@@ -9,7 +9,7 @@ export async function GET() {
   const stripe = new Stripe(secretKey);
   try {
     const prices = await stripe.prices.list({ active: true, expand: ['data.product'], limit: 100 });
-    const products = prices.flatMap((price) => {
+    const products = prices.data.flatMap((price: Stripe.Price) => {
       const product = typeof price.product === 'string' ? null : price.product;
       if (!product || !('name' in product) || !product.active || price.type !== 'one_time' || !price.unit_amount) return [];
       return [{
