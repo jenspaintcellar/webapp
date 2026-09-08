@@ -1,5 +1,3 @@
-import { getSupabaseClient } from '@/lib/supabase/client';
-
 export type PublishedEvent = {
   id: string;
   starts_at: string;
@@ -14,27 +12,12 @@ export type PublishedEvent = {
 };
 
 export async function getPublishedEvents() {
-  const supabase = getSupabaseClient();
-  if (!supabase) return [] as PublishedEvent[];
-
-  const { data, error } = await supabase
-    .from('events')
-    .select('id, starts_at, ends_at, capacity, price, audience, classes(name, description, audience, image_url), locations(name, city)')
-    .eq('status', 'published')
-    .gte('starts_at', new Date().toISOString())
-    .order('starts_at', { ascending: true });
-
-  if (error) {
-    console.error('Could not load published events:', error.message);
+  const response = await fetch('/api/public/events', { cache: 'no-store' });
+  if (!response.ok) {
+    console.error('Could not load published events:', response.statusText);
     return [] as PublishedEvent[];
   }
 
-  const events = await Promise.all((data || []).map(async (event) => {
-    const classes = Array.isArray(event.classes) ? event.classes[0] || null : event.classes;
-    const locations = Array.isArray(event.locations) ? event.locations[0] || null : event.locations;
-    const { data: spots, error: spotsError } = await supabase.rpc('get_event_spots_remaining', { requested_event_id: event.id });
-    if (spotsError || spots === null) console.error('Could not load event availability:', spotsError?.message || 'No availability returned');
-    return { ...event, classes, locations, spots_remaining: spots ?? 0 } as unknown as PublishedEvent;
-  }));
-  return events;
+  const payload = await response.json() as { events?: PublishedEvent[] };
+  return payload.events || [];
 }

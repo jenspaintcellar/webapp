@@ -10,14 +10,6 @@ import styles from './Events.module.css';
 export default function Events() {
   const [events, setEvents] = useState<PublishedEvent[]>([]);
   const [loaded, setLoaded] = useState(false);
-  const configured = Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL
-    && (
-      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
-      || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-      || process.env.NEXT_PUBLIC_SUPABASE_PUB
-    )
-  );
 
   useEffect(() => {
     getPublishedEvents().then((data) => { setEvents(data); setLoaded(true); });
@@ -31,10 +23,7 @@ export default function Events() {
           subtitle="Join us for these special creative gatherings"
         />
 
-        {!configured ? <div className={styles.emptyState}>
-          <h3>Events are being connected.</h3>
-          <p>Supabase configuration is missing from this website deployment.</p>
-        </div> : !events.length && loaded ? <div className={styles.emptyState}>
+        {!events.length && loaded ? <div className={styles.emptyState}>
           <div className={styles.emptyIcon} aria-hidden="true">&#128197;</div>
           <h3>New creative experiences are coming soon.</h3>
           <p>Check back soon for upcoming classes and events.</p>

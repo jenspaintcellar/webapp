@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useSearchParams } from 'next/navigation';
-import { getSupabaseClient } from '@/lib/supabase/client';
 
 const emptyAttendee = () => ({ first_name: '', last_name: '', phone: '', birth_date: '', emergency_contact_name: '', emergency_contact_phone: '', waiver_accepted: false });
 type Attendee = ReturnType<typeof emptyAttendee>;
@@ -25,25 +24,31 @@ export default function RegistrationPage() {
   const [confirming, setConfirming] = useState(false);
   const [confirmError, setConfirmError] = useState('');
   const paymentResult = searchParams.get('payment');
-  const supabase = getSupabaseClient();
 
   useEffect(() => {
-    if (!supabase) {
-      setMessage('This page is temporarily unavailable because website database settings are missing.');
-      setNotFound(true);
-      return;
-    }
-    supabase
-      .from('events')
-      .select('id, starts_at, capacity, price, classes(name, description), locations(name, city)')
-      .eq('id', id)
-      .eq('status', 'published')
-      .single()
-      .then(({ data }) => {
-        setEvent(data as EventRecord | null);
-        setNotFound(!data);
+    fetch(`/api/public/events/${id}`, { cache: 'no-store' })
+      .then(async (response) => {
+        if (response.status === 404) {
+          setNotFound(true);
+          setMessage('This class is no longer available.');
+          return;
+        }
+
+        if (!response.ok) {
+          setNotFound(true);
+          setMessage('This page is temporarily unavailable because website database settings are missing.');
+          return;
+        }
+
+        const payload = await response.json() as { event?: EventRecord | null };
+        setEvent(payload.event || null);
+        setNotFound(!payload.event);
+      })
+      .catch(() => {
+        setNotFound(true);
+        setMessage('This page is temporarily unavailable right now. Please try again shortly.');
       });
-  }, [id, supabase]);
+  }, [id]);
   useEffect(() => { if (paymentResult) setStep(4); }, [paymentResult]);
   useEffect(() => {
     const sessionId = searchParams.get('session_id');
