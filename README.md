@@ -18,6 +18,25 @@ npm run build
 npm start
 ```
 
+## Payment Environment Variables
+
+Set these values in your deployment environment before testing checkout:
+
+```env
+STRIPE_SECRET_KEY=sk_live_or_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+```
+
+Accepted aliases:
+
+- `STRIPE_KEY` (instead of `STRIPE_SECRET_KEY`)
+- `STRIPE_WEBHOOK_SIGNING_SECRET` (instead of `STRIPE_WEBHOOK_SECRET`)
+- `SUPABASE_URL` (instead of `NEXT_PUBLIC_SUPABASE_URL`)
+- `SUPABASE_SERVICE_KEY` (instead of `SUPABASE_SERVICE_ROLE_KEY`)
+- For checkout read access only: `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, or `NEXT_PUBLIC_SUPABASE_PUB`
+
 ## Updating Content
 
 All editable content is stored in the `src/data/` directory. No need to touch component files - just update the data files:

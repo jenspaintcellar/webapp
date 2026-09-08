@@ -3,7 +3,7 @@ import Stripe from 'stripe';
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const secretKey = process.env.STRIPE_SECRET_KEY;
+  const secretKey = process.env.STRIPE_SECRET_KEY || process.env.STRIPE_KEY;
   if (!secretKey) return Response.json({ products: [], configured: false });
 
   const stripe = new Stripe(secretKey);

@@ -10,16 +10,23 @@ import { rejectUntrustedBrowserRequest } from '@/lib/requestSecurity';
 export async function POST(request: Request) {
   const rejectedRequest = rejectUntrustedBrowserRequest(request);
   if (rejectedRequest) return rejectedRequest;
-  const stripeSecret = process.env.STRIPE_SECRET_KEY;
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!stripeSecret || !supabaseUrl || !serviceKey) return NextResponse.json({ error: 'Payment is not configured yet.' }, { status: 503 });
+  const stripeSecret = process.env.STRIPE_SECRET_KEY || process.env.STRIPE_KEY;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+  const supabaseReadKey =
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+    || process.env.SUPABASE_SERVICE_KEY
+    || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+    || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    || process.env.NEXT_PUBLIC_SUPABASE_PUB;
+  if (!stripeSecret || !supabaseUrl || !supabaseReadKey) {
+    return NextResponse.json({ error: 'Payment is not configured yet. Missing Stripe or Supabase credentials in deployment environment.' }, { status: 503 });
+  }
 
   const body = await request.json().catch(() => null) as { eventId?: string; email?: string; attendees?: AttendeeInput[] } | null;
   if (!body?.eventId || !body.email || !Array.isArray(body.attendees) || !/^[0-9a-f-]{36}$/i.test(body.eventId)) return NextResponse.json({ error: 'Registration details are incomplete.' }, { status: 400 });
   if (!validateAttendees(body.attendees)) return NextResponse.json({ error: 'Every attendee needs a name, phone number, birthday, and emergency contact.' }, { status: 400 });
 
-  const supabase = createClient(supabaseUrl, serviceKey);
+  const supabase = createClient(supabaseUrl, supabaseReadKey);
   const { data: event, error: eventError } = await supabase.from('events').select('id, price, capacity, status, starts_at, classes(name)').eq('id', body.eventId).eq('status', 'published').single();
   if (eventError || !event || new Date(event.starts_at) <= new Date()) return NextResponse.json({ error: 'This class is no longer available.' }, { status: 400 });
 

@@ -10,10 +10,12 @@ import { rejectUntrustedBrowserRequest } from '@/lib/requestSecurity';
 export async function POST(request: Request) {
   const rejectedRequest = rejectUntrustedBrowserRequest(request);
   if (rejectedRequest) return rejectedRequest;
-  const stripeSecret = process.env.STRIPE_SECRET_KEY;
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!stripeSecret || !supabaseUrl || !serviceKey) return NextResponse.json({ error: 'Payment is not configured yet.' }, { status: 503 });
+  const stripeSecret = process.env.STRIPE_SECRET_KEY || process.env.STRIPE_KEY;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY;
+  if (!stripeSecret || !supabaseUrl || !serviceKey) {
+    return NextResponse.json({ error: 'Payment is not configured yet. Missing Stripe or Supabase server credentials in deployment environment.' }, { status: 503 });
+  }
 
   const body = await request.json().catch(() => null) as { sessionId?: string } | null;
   if (!body?.sessionId || !/^cs_(test|live)_[a-zA-Z0-9]+$/.test(body.sessionId)) return NextResponse.json({ error: 'A valid session is required.' }, { status: 400 });

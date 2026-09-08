@@ -4,7 +4,7 @@ import { rejectUntrustedBrowserRequest } from '@/lib/requestSecurity';
 export async function POST(request: Request) {
   const rejectedRequest = rejectUntrustedBrowserRequest(request);
   if (rejectedRequest) return rejectedRequest;
-  const secretKey = process.env.STRIPE_SECRET_KEY;
+  const secretKey = process.env.STRIPE_SECRET_KEY || process.env.STRIPE_KEY;
   if (!secretKey) return Response.json({ error: 'Shop checkout is not configured.' }, { status: 503 });
 
   const body = await request.json().catch(() => null) as { priceId?: string } | null;
