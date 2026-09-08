@@ -10,7 +10,14 @@ import styles from './Events.module.css';
 export default function Events() {
   const [events, setEvents] = useState<PublishedEvent[]>([]);
   const [loaded, setLoaded] = useState(false);
-  const configured = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
+  const configured = Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL
+    && (
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+      || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+      || process.env.NEXT_PUBLIC_SUPABASE_PUB
+    )
+  );
 
   useEffect(() => {
     getPublishedEvents().then((data) => { setEvents(data); setLoaded(true); });

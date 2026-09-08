@@ -27,7 +27,23 @@ export default function RegistrationPage() {
   const paymentResult = searchParams.get('payment');
   const supabase = getSupabaseClient();
 
-  useEffect(() => { if (!supabase) return; supabase.from('events').select('id, starts_at, capacity, price, classes(name, description), locations(name, city)').eq('id', id).eq('status', 'published').single().then(({ data }) => { setEvent(data as EventRecord | null); setNotFound(!data); }); }, [id, supabase]);
+  useEffect(() => {
+    if (!supabase) {
+      setMessage('This page is temporarily unavailable because website database settings are missing.');
+      setNotFound(true);
+      return;
+    }
+    supabase
+      .from('events')
+      .select('id, starts_at, capacity, price, classes(name, description), locations(name, city)')
+      .eq('id', id)
+      .eq('status', 'published')
+      .single()
+      .then(({ data }) => {
+        setEvent(data as EventRecord | null);
+        setNotFound(!data);
+      });
+  }, [id, supabase]);
   useEffect(() => { if (paymentResult) setStep(4); }, [paymentResult]);
   useEffect(() => {
     const sessionId = searchParams.get('session_id');
@@ -51,7 +67,7 @@ export default function RegistrationPage() {
     window.location.href = result.url;
   }
 
-  if (notFound) return <main className="registration-page"><h1>Class not found</h1><Link href="/#events">Back to events</Link></main>;
+  if (notFound) return <main className="registration-page"><h1>Class not found</h1><p>{message || 'This class is no longer available.'}</p><Link href="/#events">Back to events</Link></main>;
   if (!event) return <main className="registration-page">Loading class...</main>;
   const totalPrice = (Number(event.price) * attendees.length).toFixed(2);
   return <main className="registration-page"><div className="registration-card"><Link href="/#events" className="registration-back">Back to events</Link><p className="registration-kicker">{paymentResult ? 'Payment' : `Step ${step} of 3`}</p><h1>{event.classes?.name || 'Paint class'}</h1><p className="registration-summary">{new Date(event.starts_at).toLocaleString()} · {event.locations?.name}, {event.locations?.city}</p><p className="registration-price">${Number(event.price).toFixed(2)} per person · {attendees.length} {attendees.length === 1 ? 'person' : 'people'} · ${totalPrice} total</p>{!paymentResult && <div className="registration-progress" aria-label={`Registration step ${step} of 3`}><span className={step >= 1 ? 'active' : ''} /><span className={step >= 2 ? 'active' : ''} /><span className={step >= 3 ? 'active' : ''} /></div>}
