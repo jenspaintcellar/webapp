@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { getEventSpotsRemaining } from '@/lib/seatAvailability';
 
 type EventRecord = {
   id: string;
   starts_at: string;
   capacity: number;
   price: number;
+  spots_remaining?: number;
   classes: { name: string; description: string | null } | { name: string; description: string | null }[] | null;
   locations: { name: string; city: string } | { name: string; city: string }[] | null;
 };
@@ -46,8 +48,14 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
   const event = data as EventRecord;
   const classes = Array.isArray(event.classes) ? event.classes[0] || null : event.classes;
   const locations = Array.isArray(event.locations) ? event.locations[0] || null : event.locations;
+  let spotsRemaining = 0;
+  try {
+    spotsRemaining = await getEventSpotsRemaining(supabase, event.id, event.capacity);
+  } catch (spotsError) {
+    return NextResponse.json({ error: spotsError instanceof Error ? spotsError.message : 'Could not load event availability.' }, { status: 500 });
+  }
 
-  return NextResponse.json({ event: { ...event, classes, locations } }, {
+  return NextResponse.json({ event: { ...event, classes, locations, spots_remaining: spotsRemaining } }, {
     headers: {
       'Cache-Control': 'no-store',
     },

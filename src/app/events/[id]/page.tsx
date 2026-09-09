@@ -6,7 +6,7 @@ import { useParams, useSearchParams } from 'next/navigation';
 
 const emptyAttendee = () => ({ first_name: '', last_name: '', phone: '', birth_date: '', emergency_contact_name: '', emergency_contact_phone: '', waiver_accepted: false });
 type Attendee = ReturnType<typeof emptyAttendee>;
-type EventRecord = { id: string; starts_at: string; capacity: number; price: number; classes: { name: string; description: string | null } | null; locations: { name: string; city: string } | null };
+type EventRecord = { id: string; starts_at: string; capacity: number; price: number; spots_remaining?: number; classes: { name: string; description: string | null } | null; locations: { name: string; city: string } | null };
 type Step = 1 | 2 | 3 | 4;
 type RegistrationDraft = {
   email: string;
@@ -17,6 +17,14 @@ type RegistrationDraft = {
   step: Step;
 };
 type PaymentStatus = 'success' | 'cancelled' | null;
+type PaymentSummary = {
+  className: string;
+  startsAt?: string;
+  location: string;
+  email: string;
+  attendees: number;
+  totalPaid: string;
+};
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_PATTERN = /^\(\d{3}\) \d{3}-\d{4}$/;
@@ -61,8 +69,10 @@ export default function RegistrationPage() {
   const [waiverScrolled, setWaiverScrolled] = useState(false);
   const [waiverConfirmed, setWaiverConfirmed] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>(null);
+  const [paymentSummary, setPaymentSummary] = useState<PaymentSummary | null>(null);
   const [draftHydrated, setDraftHydrated] = useState(false);
   const previousStepRef = useRef<Step>(step);
+  const maxAllowedAttendees = event ? Math.max(0, Math.min(event.spots_remaining ?? event.capacity, 12)) : 1;
 
   function persistDraft(stepOverride?: Step) {
     if (!id || paymentStatus === 'success') return;
@@ -113,16 +123,31 @@ export default function RegistrationPage() {
 
   useEffect(() => {
     const payment = searchParams.get('payment');
-    if (payment === 'success' || payment === 'cancelled') {
-      setPaymentStatus(payment);
+    const sessionId = searchParams.get('session_id');
+    if (payment === 'success' || (!payment && !!sessionId)) {
+      setPaymentStatus('success');
+      setStep(4);
+      return;
+    }
+    if (payment === 'cancelled') {
+      setPaymentStatus('cancelled');
       setStep(4);
       return;
     }
     setPaymentStatus(null);
   }, [searchParams]);
 
+  function isCheckoutReturn() {
+    const payment = searchParams.get('payment');
+    const sessionId = searchParams.get('session_id');
+    return payment === 'success' || payment === 'cancelled' || !!sessionId;
+  }
+
   useEffect(() => {
-    if (!id || paymentStatus === 'success') return;
+    if (!id || paymentStatus === 'success' || isCheckoutReturn()) {
+      setDraftHydrated(true);
+      return;
+    }
     const rawDraft = window.sessionStorage.getItem(draftStorageKey);
     if (!rawDraft) {
       setDraftHydrated(true);
@@ -142,25 +167,39 @@ export default function RegistrationPage() {
     } finally {
       setDraftHydrated(true);
     }
-  }, [draftStorageKey, id, paymentStatus]);
+  }, [draftStorageKey, id, paymentStatus, searchParams]);
 
   useEffect(() => {
-    if (!id || paymentStatus === 'success' || !draftHydrated) return;
+    if (!id || paymentStatus === 'success' || !draftHydrated || isCheckoutReturn()) return;
     persistDraft();
-  }, [attendees, draftHydrated, draftStorageKey, email, id, paymentStatus, sameEmergencyContact, step, waiverConfirmed, waiverScrolled]);
+  }, [attendees, draftHydrated, draftStorageKey, email, id, paymentStatus, sameEmergencyContact, searchParams, step, waiverConfirmed, waiverScrolled]);
 
   useEffect(() => {
     setDraftHydrated(false);
   }, [id]);
 
   useEffect(() => {
-    if (!id || paymentStatus !== 'success') return;
+    if (paymentStatus !== 'success') return;
     window.sessionStorage.removeItem(draftStorageKey);
-  }, [draftStorageKey, id, paymentStatus]);
+    setEmail('');
+    setAttendees([emptyAttendee()]);
+    setSameEmergencyContact(false);
+    setWaiverScrolled(false);
+    setWaiverConfirmed(false);
+    setMessage('');
+  }, [draftStorageKey, paymentStatus]);
 
   useEffect(() => {
     setMessage('');
   }, [paymentStatus, step]);
+
+  useEffect(() => {
+    if (!event || paymentStatus === 'success') return;
+    if (attendees.length <= maxAllowedAttendees) return;
+    const safeCount = Math.max(1, maxAllowedAttendees);
+    setAttendees((current) => current.slice(0, safeCount));
+    setMessage(`Only ${maxAllowedAttendees} ${maxAllowedAttendees === 1 ? 'seat is' : 'seats are'} currently available for this class.`);
+  }, [attendees.length, event, maxAllowedAttendees, paymentStatus]);
 
   useEffect(() => {
     if (previousStepRef.current === step) return;
@@ -178,10 +217,18 @@ export default function RegistrationPage() {
   useEffect(() => {
     const sessionId = searchParams.get('session_id');
     if (paymentStatus !== 'success' || !sessionId) return;
+    setConfirmError('');
+    setPaymentSummary(null);
     setConfirming(true);
     fetch('/api/stripe/verify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId }) })
       .then((response) => response.json())
-      .then((result: { confirmed?: boolean; error?: string }) => { if (!result.confirmed && result.error) setConfirmError(result.error); })
+      .then((result: { confirmed?: boolean; error?: string; summary?: PaymentSummary }) => {
+        if (!result.confirmed && result.error) {
+          setConfirmError(result.error);
+          return;
+        }
+        if (result.confirmed && result.summary) setPaymentSummary(result.summary);
+      })
       .finally(() => setConfirming(false));
   }, [paymentStatus, searchParams]);
 
@@ -197,6 +244,11 @@ export default function RegistrationPage() {
   }
 
   function validateBasics() {
+    if (attendees.length > maxAllowedAttendees) {
+      setMessage(`Only ${maxAllowedAttendees} ${maxAllowedAttendees === 1 ? 'seat is' : 'seats are'} available for this class.`);
+      return false;
+    }
+
     if (!EMAIL_PATTERN.test(email.trim())) {
       setMessage('Enter a valid email address, including @ and domain.');
       return false;
@@ -245,6 +297,12 @@ export default function RegistrationPage() {
       return;
     }
     if (attendees.some((attendee) => !attendee.waiver_accepted)) { setMessage('Each attendee must accept the waiver.'); return; }
+
+    if (attendees.length > maxAllowedAttendees) {
+      setMessage(`Only ${maxAllowedAttendees} ${maxAllowedAttendees === 1 ? 'seat is' : 'seats are'} available for this class.`);
+      return;
+    }
+
     persistDraft(3);
     setPaymentLoading(true); setMessage('');
 
@@ -267,11 +325,11 @@ export default function RegistrationPage() {
   if (notFound) return <main className="registration-page"><h1>Class not found</h1><p>{message || 'This class is no longer available.'}</p><Link href="/#events">Back to events</Link></main>;
   if (!event) return <main className="registration-page">Loading class...</main>;
   const totalPrice = (Number(event.price) * attendees.length).toFixed(2);
-  return <main className="registration-page"><div className="registration-card"><Link href="/#events" className="registration-back">Back to events</Link><p className="registration-kicker">{paymentStatus ? 'Payment' : `Step ${step} of 3`}</p><h1>{event.classes?.name || 'Paint class'}</h1><p className="registration-summary">{new Date(event.starts_at).toLocaleString()} · {event.locations?.name}, {event.locations?.city}</p><p className="registration-price">${Number(event.price).toFixed(2)} per person · {attendees.length} {attendees.length === 1 ? 'person' : 'people'} · ${totalPrice} total</p>{!paymentStatus && <div className="registration-progress" aria-label={`Registration step ${step} of 3`}><span className={step >= 1 ? 'active' : ''} /><span className={step >= 2 ? 'active' : ''} /><span className={step >= 3 ? 'active' : ''} /></div>}
-    {step === 1 && <form className="registration-form" onSubmit={(e) => { e.preventDefault(); if (validateBasics()) goToStep(2); }}><div className="registration-section"><h2>1. Who is attending?</h2><p>Enter the reservation email and add each participant. Names are automatically capitalized and limited to 25 characters.</p><label>Email address<input required type="email" value={email} onChange={(e) => { setMessage(''); setEmail(e.target.value.trim()); }} /></label>{attendees.map((attendee, index) => <fieldset className="attendee-fields" key={index}><legend>Person {index + 1}</legend>{index > 0 && <button type="button" className="remove-attendee" onClick={() => { setMessage(''); setAttendees((current) => current.filter((_, attendeeIndex) => attendeeIndex !== index)); }}>Remove person</button>}<div className="attendee-grid"><label>First name<input required maxLength={25} value={attendee.first_name} onChange={(e) => updateAttendee(index, 'first_name', formatName(e.target.value))} /></label><label>Last name<input required maxLength={25} value={attendee.last_name} onChange={(e) => updateAttendee(index, 'last_name', formatName(e.target.value))} /></label></div><label>Phone<input required type="tel" inputMode="numeric" maxLength={14} placeholder="(999) 999-9999" value={attendee.phone} onChange={(e) => updateAttendee(index, 'phone', formatPhone(e.target.value))} /></label><label>Birthday<input required type="date" value={attendee.birth_date} onChange={(e) => updateAttendee(index, 'birth_date', e.target.value)} /></label></fieldset>)}{attendees.length < Math.min(event.capacity, 12) && <button type="button" className="secondary-button add-attendee-button" onClick={() => { setMessage(''); setAttendees((current) => [...current, emptyAttendee()]); }}>+ Add another person</button>}</div><button className="primary-button" type="submit">Continue</button></form>}
+  return <main className="registration-page"><div className="registration-card"><Link href="/#events" className="registration-back">Back to events</Link><p className="registration-kicker">{paymentStatus ? 'Payment' : `Step ${step} of 3`}</p><h1>{event.classes?.name || 'Paint class'}</h1><p className="registration-summary">{new Date(event.starts_at).toLocaleString()} · {event.locations?.name}, {event.locations?.city}</p>{!paymentStatus && !!event.classes?.description && <p className="registration-class-description">{event.classes.description}</p>}{!paymentStatus && <p className="registration-price">${Number(event.price).toFixed(2)} per person · {attendees.length} {attendees.length === 1 ? 'person' : 'people'} · ${totalPrice} total</p>}{!paymentStatus && <div className="registration-progress" aria-label={`Registration step ${step} of 3`}><span className={step >= 1 ? 'active' : ''} /><span className={step >= 2 ? 'active' : ''} /><span className={step >= 3 ? 'active' : ''} /></div>}
+    {step === 1 && <form className="registration-form" onSubmit={(e) => { e.preventDefault(); if (validateBasics()) goToStep(2); }}><div className="registration-section"><h2>1. Who is attending?</h2><p>Enter the reservation email and add each participant. Names are automatically capitalized and limited to 25 characters.</p><p className="registration-help">{maxAllowedAttendees === 0 ? 'This class is currently full.' : `${maxAllowedAttendees} ${maxAllowedAttendees === 1 ? 'seat is' : 'seats are'} currently available.`}</p><label>Email address<input required type="email" value={email} onChange={(e) => { setMessage(''); setEmail(e.target.value.trim()); }} /></label>{attendees.map((attendee, index) => <fieldset className="attendee-fields" key={index}><legend>Person {index + 1}</legend>{index > 0 && <button type="button" className="remove-attendee" onClick={() => { setMessage(''); setAttendees((current) => current.filter((_, attendeeIndex) => attendeeIndex !== index)); }}>Remove person</button>}<div className="attendee-grid"><label>First name<input required maxLength={25} value={attendee.first_name} onChange={(e) => updateAttendee(index, 'first_name', formatName(e.target.value))} /></label><label>Last name<input required maxLength={25} value={attendee.last_name} onChange={(e) => updateAttendee(index, 'last_name', formatName(e.target.value))} /></label></div><label>Phone<input required type="tel" inputMode="numeric" maxLength={14} placeholder="(999) 999-9999" value={attendee.phone} onChange={(e) => updateAttendee(index, 'phone', formatPhone(e.target.value))} /></label><label>Birthday<input required type="date" value={attendee.birth_date} onChange={(e) => updateAttendee(index, 'birth_date', e.target.value)} /></label></fieldset>)}{attendees.length < maxAllowedAttendees && <button type="button" className="secondary-button add-attendee-button" onClick={() => { setMessage(''); setAttendees((current) => [...current, emptyAttendee()]); }}>+ Add another person</button>}</div><button className="primary-button" type="submit" disabled={maxAllowedAttendees === 0}>Continue</button></form>}
     {step === 2 && <form className="registration-form" onSubmit={(e) => { e.preventDefault(); if (validateEmergency()) { setWaiverScrolled(false); setWaiverConfirmed(false); goToStep(3); } }}><div className="registration-section"><h2>2. Emergency contact</h2><p>Add a contact for each participant, or use one contact for everyone.</p>{attendees.length > 1 && <label className="waiver-check"><input type="checkbox" checked={sameEmergencyContact} onChange={(e) => { setMessage(''); setSameEmergencyContact(e.target.checked); }} /><span>Use the same emergency contact for everyone</span></label>}{attendees.map((attendee, index) => <fieldset className="attendee-fields" key={index}><legend>{attendee.first_name} {attendee.last_name}</legend>{sameEmergencyContact && index > 0 ? <p className="registration-help">Using the first person&apos;s emergency contact.</p> : <div className="attendee-grid"><label>Contact name<input required maxLength={25} value={attendee.emergency_contact_name} onChange={(e) => updateAttendee(index, 'emergency_contact_name', formatName(e.target.value))} /></label><label>Contact phone<input required type="tel" inputMode="numeric" maxLength={14} placeholder="(999) 999-9999" value={attendee.emergency_contact_phone} onChange={(e) => updateAttendee(index, 'emergency_contact_phone', formatPhone(e.target.value))} /></label></div>}</fieldset>)}</div><div className="registration-actions"><button type="button" className="secondary-button" onClick={() => goToStep(1)}>Back</button><button className="primary-button" type="submit">Continue</button></div></form>}
     {step === 3 && <form className="registration-form" onSubmit={(e) => { e.preventDefault(); goToPayment(); }}><div className="registration-section"><h2>3. Participant waiver & secure checkout</h2><p>Please review and acknowledge the waiver before continuing to secure checkout.</p><div className="waiver-panel"><p className="waiver-title">Jen&apos;s Paint Cellar Studio Participation Waiver</p><div className="waiver-scroll" onScroll={handleWaiverScroll}><p>Jen&apos;s Paint Cellar provides guided paint experiences for guests of all skill levels. By joining this class, each participant confirms they are voluntarily participating in a creative activity that may involve standing, reaching, handling paint supplies, and using shared studio equipment.</p><p>Participants agree to follow instructor guidance and posted studio safety rules, including careful use of stools, easels, brushes, and tools. Participants also agree to use materials responsibly and to report spills, injuries, or unsafe conditions to staff immediately.</p><p>Each participant accepts responsibility for their own behavior during class and agrees to act respectfully toward instructors, staff, and other guests. Jen&apos;s Paint Cellar may remove participants for unsafe, disruptive, or inappropriate conduct.</p><p>To the fullest extent allowed by law, participants release Jen&apos;s Paint Cellar and its staff from liability for ordinary risks related to participation, including minor injury, accidental paint damage, or personal property loss.</p><p>Participants authorize staff to contact the listed emergency contact and arrange reasonable emergency assistance if needed. By confirming below, you acknowledge that you have read and understood this waiver and agree on behalf of all listed participants.</p></div><label className="waiver-check waiver-confirm"><input type="checkbox" checked={waiverConfirmed} disabled={!waiverScrolled} onChange={(e) => { setMessage(''); setWaiverConfirmed(e.target.checked); if (!e.target.checked) setAttendees((current) => current.map((attendee) => ({ ...attendee, waiver_accepted: false }))); }} /><span>I have read the full waiver and agree to these terms.</span></label>{!waiverScrolled && <p className="registration-help">Scroll through the waiver text to enable confirmation.</p>}</div>{attendees.map((attendee, index) => <label className="waiver-check" key={index}><input required type="checkbox" disabled={!waiverConfirmed} checked={attendee.waiver_accepted} onChange={(e) => updateAttendee(index, 'waiver_accepted', e.target.checked)} /><span><strong>{attendee.first_name} {attendee.last_name}</strong> confirms acceptance of the participant waiver.</span></label>)}</div><div className="registration-actions"><button type="button" className="secondary-button" onClick={() => goToStep(2)} disabled={paymentLoading}>Back</button><button className="primary-button payment-button" type="submit" disabled={paymentLoading || !waiverConfirmed || !waiverScrolled}>{paymentLoading ? 'Redirecting to secure checkout...' : 'Continue to Secure Checkout'}</button></div></form>}
-    {paymentStatus === 'success' && step === 4 && <div className="registration-success"><h2>{confirming ? 'Confirming your payment...' : confirmError ? 'Payment received, but...' : 'Payment received'}</h2><p>{confirming ? 'Please wait a moment while we confirm your reservation.' : confirmError || 'Thank you! Your reservation is confirmed. A confirmation email will follow shortly.'}</p>{!confirming && <Link className="secondary-button" href="/#events">Return to events</Link>}</div>}
+    {paymentStatus === 'success' && step === 4 && <div className="registration-success"><h2>{confirming ? 'Confirming your payment...' : confirmError ? 'Payment received, but...' : 'Payment confirmed'}</h2><p>{confirming ? 'Please wait a moment while we confirm your reservation.' : confirmError || 'Your booking is confirmed. A confirmation email will be sent shortly.'}</p>{paymentSummary && !confirming && !confirmError && <div className="registration-section"><h3>Booking overview</h3><p>{paymentSummary.className}</p>{paymentSummary.startsAt ? <p>{new Date(paymentSummary.startsAt).toLocaleString()} · {paymentSummary.location}</p> : <p>{paymentSummary.location}</p>}<p>{paymentSummary.attendees} {paymentSummary.attendees === 1 ? 'participant' : 'participants'} · ${paymentSummary.totalPaid} paid</p><p>Confirmation email: {paymentSummary.email}</p></div>}{!confirming && <Link className="secondary-button" href="/#events">Return to events</Link>}</div>}
     {paymentStatus === 'cancelled' && step === 4 && <div className="registration-success"><h2>Payment not completed</h2><p>Nothing was booked or charged. You can go back and try again whenever you&apos;re ready.</p><button className="primary-button" type="button" onClick={() => goToStep(3)}>Try again</button></div>}
     {message && <p role="status" className="registration-message">{message}</p>}</div></main>;
 }

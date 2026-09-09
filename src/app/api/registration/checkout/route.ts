@@ -3,6 +3,7 @@ import Stripe from 'stripe';
 import { NextResponse } from 'next/server';
 import { encodeAttendeesToMetadata, validateAttendees, type AttendeeInput } from '@/lib/registration';
 import { rejectUntrustedBrowserRequest } from '@/lib/requestSecurity';
+import { getEventSpotsRemaining } from '@/lib/seatAvailability';
 import { createStripeClient } from '@/lib/stripeClient';
 
 // Nothing is written to the database here. Attendee details travel only in the Stripe
@@ -33,10 +34,13 @@ export async function POST(request: Request) {
   if (eventError || !event || new Date(event.starts_at) <= new Date()) return NextResponse.json({ error: 'This class is no longer available.' }, { status: 400 });
 
   const guestCount = body.attendees.length;
-  const { data: bookings, error: countError } = await supabase.from('bookings').select('guest_count').eq('event_id', body.eventId).eq('status', 'confirmed');
-  if (countError) return NextResponse.json({ error: countError.message }, { status: 400 });
-  const bookedSeats = (bookings || []).reduce((total, booking) => total + (booking.guest_count || 1), 0);
-  if (bookedSeats + guestCount > event.capacity) return NextResponse.json({ error: 'There are not enough seats available.' }, { status: 400 });
+  let availableSeats = 0;
+  try {
+    availableSeats = await getEventSpotsRemaining(supabase, body.eventId, event.capacity);
+  } catch (spotsError) {
+    return NextResponse.json({ error: spotsError instanceof Error ? spotsError.message : 'Could not check available seats.' }, { status: 400 });
+  }
+  if (guestCount > availableSeats) return NextResponse.json({ error: `Only ${availableSeats} ${availableSeats === 1 ? 'seat is' : 'seats are'} available for this class.` }, { status: 400 });
 
   const email = body.email.trim().toLowerCase();
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) return NextResponse.json({ error: 'Enter a valid email address.' }, { status: 400 });

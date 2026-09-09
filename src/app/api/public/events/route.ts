@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { getEventSpotsRemainingMap } from '@/lib/seatAvailability';
 
 type PublishedEvent = {
   id: string;
@@ -40,19 +41,30 @@ export async function GET() {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  const events = await Promise.all(
-    ((data || []) as PublishedEvent[]).map(async (event) => {
-      const classes = Array.isArray(event.classes) ? event.classes[0] || null : event.classes;
-      const locations = Array.isArray(event.locations) ? event.locations[0] || null : event.locations;
-      const { data: spots } = await supabase.rpc('get_event_spots_remaining', { requested_event_id: event.id });
-      return {
-        ...event,
-        classes,
-        locations,
-        spots_remaining: typeof spots === 'number' ? spots : 0,
-      };
-    })
-  );
+  const typedEvents = (data || []) as PublishedEvent[];
+  const eventIds = typedEvents.map((event) => event.id);
+  const capacitiesByEventId = typedEvents.reduce<Record<string, number>>((acc, event) => {
+    acc[event.id] = event.capacity;
+    return acc;
+  }, {});
+
+  let spotsRemainingByEventId: Record<string, number> = {};
+  try {
+    spotsRemainingByEventId = await getEventSpotsRemainingMap(supabase, eventIds, capacitiesByEventId);
+  } catch (spotsError) {
+    return NextResponse.json({ error: spotsError instanceof Error ? spotsError.message : 'Could not load event availability.' }, { status: 500 });
+  }
+
+  const events = typedEvents.map((event) => {
+    const classes = Array.isArray(event.classes) ? event.classes[0] || null : event.classes;
+    const locations = Array.isArray(event.locations) ? event.locations[0] || null : event.locations;
+    return {
+      ...event,
+      classes,
+      locations,
+      spots_remaining: spotsRemainingByEventId[event.id] ?? 0,
+    };
+  });
 
   return NextResponse.json({ events }, {
     headers: {

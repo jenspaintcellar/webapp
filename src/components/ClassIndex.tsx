@@ -30,36 +30,50 @@ const audienceBadgeLabels: Record<string, string> = { all_ages: 'All ages', adul
 function eventTitle(event: PublishedEvent) { return event.classes?.name || 'Paint class'; }
 function eventImage(event: PublishedEvent, index: number) { return event.classes?.image_url || eventImages[index % eventImages.length]; }
 function eventAudience(event: PublishedEvent) { return event.audience || event.classes?.audience || 'all_ages'; }
+function eventDescription(event: PublishedEvent) { return event.classes?.description?.trim() || 'Join us for a guided creative experience in our Salem studio.'; }
 
 function EventCard({ event, index }: { event: PublishedEvent; index: number }) {
   const audience = eventAudience(event);
+  const isFull = (event.spots_remaining ?? 0) <= 0;
+  const cardContent = <>
+    <div className={styles.imageWrap}>
+      <img src={eventImage(event, index)} alt="" loading="lazy" />
+      <span className={styles.dateBadge}>
+        <CalendarDays size={14} />
+        {new Date(event.starts_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+      </span>
+      {audience !== 'all_ages' && <span className={styles.audienceBadge}>{audienceBadgeLabels[audience]}</span>}
+    </div>
+    <div className={styles.cardBody}>
+      <div className={styles.cardTitleRow}>
+        <h3>{eventTitle(event)}</h3>
+        <span className={styles.cardPrice}>${event.price}</span>
+      </div>
+      <p className={styles.cardDescription}>{eventDescription(event)}</p>
+      <p className={styles.cardLocation}>
+        <MapPin size={13} />
+        {event.locations?.name || 'Salem studio'}
+      </p>
+      <p className={styles.cardMetaLine}>
+        {new Date(event.starts_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+        {' · '}
+        {isFull ? 'Full' : `${event.spots_remaining} spots left`}
+      </p>
+      {isFull && <p className={styles.fullPill}>Full</p>}
+    </div>
+  </>;
+
   return (
-    <article className={styles.card}>
-      <Link href={`/events/${event.id}`} className={styles.cardLink}>
-        <div className={styles.imageWrap}>
-          <img src={eventImage(event, index)} alt="" loading="lazy" />
-          <span className={styles.dateBadge}>
-            <CalendarDays size={14} />
-            {new Date(event.starts_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}
-          </span>
-          {audience !== 'all_ages' && <span className={styles.audienceBadge}>{audienceBadgeLabels[audience]}</span>}
+    <article className={`${styles.card} ${isFull ? styles.cardFull : ''}`}>
+      {isFull ? (
+        <div className={`${styles.cardLink} ${styles.cardLinkDisabled}`} aria-disabled="true">
+          {cardContent}
         </div>
-        <div className={styles.cardBody}>
-          <div className={styles.cardTitleRow}>
-            <h3>{eventTitle(event)}</h3>
-            <span className={styles.cardPrice}>${event.price}</span>
-          </div>
-          <p className={styles.cardLocation}>
-            <MapPin size={13} />
-            {event.locations?.name || 'Salem studio'}
-          </p>
-          <p className={styles.cardMetaLine}>
-            {new Date(event.starts_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
-            {' · '}
-            {event.spots_remaining} spots left
-          </p>
-        </div>
-      </Link>
+      ) : (
+        <Link href={`/events/${event.id}`} className={styles.cardLink}>
+          {cardContent}
+        </Link>
+      )}
     </article>
   );
 }

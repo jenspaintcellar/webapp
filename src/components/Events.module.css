@@ -91,6 +91,11 @@
   font-weight: 500;
 }
 
+.availabilityFull {
+  color: #9b1c31;
+  font-weight: 700;
+}
+
 .bookButton {
   background: #d76591;
   color: white;
@@ -108,6 +113,14 @@
 .bookButton:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(199, 91, 135, 0.2);
+}
+
+.bookButtonDisabled {
+  background: #d0c8cc;
+  color: #4c4650;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
 }
 
 .emptyState {

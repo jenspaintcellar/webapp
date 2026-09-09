@@ -37,6 +37,9 @@ export default function Events() {
               transition={{ delay: index * 0.1, duration: 0.5 }}
               viewport={{ once: true }}
             >
+              {(() => {
+                const isFull = (event.spots_remaining ?? 0) <= 0;
+                return <>
               <div className={styles.date}>
                 <time dateTime={event.starts_at}>{new Date(event.starts_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}</time>
                 <span className={styles.time}>{new Date(event.starts_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</span>
@@ -45,12 +48,22 @@ export default function Events() {
               <div className={styles.details}>
                 <h3>{event.classes?.name || 'Paint class'}</h3>
                 <p className={styles.description}>{event.classes?.description || 'Join us for a creative experience.'}</p>
-                <p className={styles.availability}>{event.spots_remaining} spots remaining</p>
+                <p className={isFull ? `${styles.availability} ${styles.availabilityFull}` : styles.availability}>
+                  {isFull ? 'Full' : `${event.spots_remaining} spots remaining`}
+                </p>
 
-                <Link href={`/events/${event.id}`} className={styles.bookButton}>
-                  Register
-                </Link>
+                {isFull ? (
+                  <span className={`${styles.bookButton} ${styles.bookButtonDisabled}`} aria-disabled="true">
+                    Full
+                  </span>
+                ) : (
+                  <Link href={`/events/${event.id}`} className={styles.bookButton}>
+                    Register
+                  </Link>
+                )}
               </div>
+              </>;
+              })()}
             </motion.div>
           ))}
         </div>}

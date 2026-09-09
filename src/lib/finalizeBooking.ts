@@ -2,6 +2,12 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type Stripe from 'stripe';
 import { calculateAge, decodeAttendeesFromMetadata } from './registration';
 
+function refundedAttendeeCount(metadata: unknown) {
+  if (!metadata || typeof metadata !== 'object') return 0;
+  const ids = (metadata as Record<string, unknown>).refunded_attendee_ids;
+  return Array.isArray(ids) ? ids.length : 0;
+}
+
 // The webhook and the success-page verify call can both try to finalize the same
 // session at nearly the same instant. This in-process lock serializes those calls so
 // only one of them actually inserts a booking; the duplicate-check further below is a
@@ -37,8 +43,12 @@ async function finalizeBookingFromSessionOnce(supabase: SupabaseClient, stripe: 
   const { data: event } = await supabase.from('events').select('id, price, capacity').eq('id', eventId).single();
   if (!event) throw new Error('This class is no longer available.');
 
-  const { data: bookings } = await supabase.from('bookings').select('guest_count').eq('event_id', eventId).eq('status', 'confirmed');
-  const bookedSeats = (bookings || []).reduce((total, booking) => total + (booking.guest_count || 1), 0);
+  const { data: bookings } = await supabase.from('bookings').select('guest_count, metadata').eq('event_id', eventId).eq('status', 'confirmed');
+  const bookedSeats = (bookings || []).reduce((total, booking) => {
+    const guestCountForBooking = Number(booking.guest_count || 0);
+    const effectiveSeats = Math.max(guestCountForBooking - refundedAttendeeCount(booking.metadata), 0);
+    return total + effectiveSeats;
+  }, 0);
   if (bookedSeats + guestCount > event.capacity) {
     if (typeof session.payment_intent === 'string') await stripe.refunds.create({ payment_intent: session.payment_intent });
     return { bookingId: null, soldOut: true };
