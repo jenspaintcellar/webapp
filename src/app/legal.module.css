@@ -7,6 +7,19 @@
 .content li { margin-bottom: 0.4rem; }
 .content a { color: #d76591; font-weight: 700; }
 
+.policyList {
+  margin: 1rem 0 0.9rem;
+  padding-left: 0;
+}
+
+.content p.policyItem {
+  margin: 0 0 0.7rem;
+}
+
+.content p.policyItem:last-child {
+  margin-bottom: 0;
+}
+
 @media (max-width: 700px) {
   .page { padding: 4rem 1.25rem 3.5rem; }
 }

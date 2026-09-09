@@ -12,55 +12,67 @@ export const metadata: Metadata = {
 export default function RefundPolicyPage() {
   return (
     <section className={styles.page}>
-      <SectionHeading title="Refund Policy" subtitle="Our policy for cancellations, rescheduling, and refunds." />
-      <p className={styles.updated}>Last updated: August 22, 2026</p>
+      <SectionHeading title="Cancellation & Refund Policy" subtitle="Our standards for cancellations, credits, and refunds." />
+      <p className={styles.updated}>Last updated: September 9, 2026</p>
 
       <div className={styles.content}>
         <section>
-          <h2>Cancelling Your Booking</h2>
+          <h2>Policy Overview</h2>
           <p>
-            If you need to cancel a class or event, please contact us as soon as possible. Cancellations made at least 48 hours before
-            the scheduled start time are eligible for a full refund or credit toward a future class.
+            Jen&apos;s Paint Cellar prepares supplies and projects specifically for each registered guest. For that reason, the following
+            cancellation and refund terms apply to all class and event bookings.
+          </p>
+          <div className={styles.policyList}>
+            <p className={styles.policyItem}><strong>7 or more days before class:</strong> Cancellations are eligible for a full refund or transfer to another available class.</p>
+            <p className={styles.policyItem}><strong>3 to 6 days before class:</strong> Cancellations are eligible for credit toward a future Jen&apos;s Paint Cellar class.</p>
+            <p className={styles.policyItem}><strong>Less than 72 hours before class:</strong> Cancellations are not eligible for a refund; however, when feasible, the project may be prepared as a take-home art kit.</p>
+            <p className={styles.policyItem}><strong>No-shows:</strong> Bookings are not eligible for a refund or class credit.</p>
+            <p className={styles.policyItem}><strong>If Jen&apos;s Paint Cellar cancels a class:</strong> Guests may choose either a full refund or class credit.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Why Timing Matters</h2>
+          <p>
+            Class sizes are limited, and each session is prepared in advance, including canvas setup, paint allocation, project planning,
+            and staffing. Timely notice helps us manage seat availability and material use responsibly. As a result, earlier cancellations
+            may qualify for refunds or transfers, while short-notice cancellations are generally handled as class credit or, when
+            available, a take-home kit.
           </p>
         </section>
 
         <section>
-          <h2>Late Cancellations & No-Shows</h2>
+          <h2>Transfers & Credits</h2>
           <p>
-            Cancellations made less than 48 hours before the class or event, and no-shows, are not eligible for a refund. We understand
-            emergencies happen, so please reach out and we will do our best to work with you.
+            Transfers and class credits are subject to availability in the requested session. If you need to move your booking, please
+            contact us as early as possible and we will make every reasonable effort to accommodate an alternate date.
           </p>
         </section>
 
         <section>
-          <h2>Rescheduling</h2>
+          <h2>Studio Cancellations</h2>
           <p>
-            If you would like to move your seat to a different date, contact us before your scheduled class or event and we will help
-            find another available session, based on seat availability.
+            If Jen&apos;s Paint Cellar must cancel a class or event, registered guests will be notified promptly and may choose either a full
+            refund or class credit.
           </p>
         </section>
 
         <section>
-          <h2>Studio-Initiated Cancellations</h2>
+          <h2>No-Show Reminder</h2>
           <p>
-            If we need to cancel or reschedule a class or event, guests will be notified as soon as possible and offered a full refund
-            or the option to move to another available date.
+            Bookings missed without prior notice are treated as no-shows and are not eligible for refund or credit. If an emergency
+            arises, please contact us as soon as possible so we can review any available options.
           </p>
         </section>
 
         <section>
-          <h2>Gift Cards</h2>
+          <h2>Questions or Requests</h2>
           <p>
-            Gift cards are non-refundable but do not expire and can be used toward any class, event, or private booking.
-          </p>
-        </section>
-
-        <section>
-          <h2>Requesting a Refund</h2>
-          <p>
-            To request a refund or ask about a specific booking, contact us at{' '}
+            To request a cancellation, transfer, or refund review, please contact us at{' '}
             <a href={`mailto:${siteConfig.contact.email}`}>{siteConfig.contact.email}</a> or{' '}
-            <a href={`tel:${siteConfig.contact.phone}`}>{siteConfig.contact.phone}</a>, and include your name and booking date.
+            <a href={`tel:${siteConfig.contact.phone}`}>{siteConfig.contact.phone}</a> and include your name, booking date, and class
+            title. We appreciate your understanding that each reservation supports advance purchasing and preparation for your studio
+            experience.
           </p>
         </section>
       </div>

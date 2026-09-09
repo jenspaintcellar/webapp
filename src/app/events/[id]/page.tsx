@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, type UIEvent } from 'react';
+import { useEffect, useRef, useState, type UIEvent } from 'react';
 import Link from 'next/link';
 import { useParams, useSearchParams } from 'next/navigation';
 
@@ -62,6 +62,7 @@ export default function RegistrationPage() {
   const [waiverConfirmed, setWaiverConfirmed] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>(null);
   const [draftHydrated, setDraftHydrated] = useState(false);
+  const previousStepRef = useRef<Step>(step);
 
   function persistDraft(stepOverride?: Step) {
     if (!id || paymentStatus === 'success') return;
@@ -160,6 +161,19 @@ export default function RegistrationPage() {
   useEffect(() => {
     setMessage('');
   }, [paymentStatus, step]);
+
+  useEffect(() => {
+    if (previousStepRef.current === step) return;
+    previousStepRef.current = step;
+
+    const scrollTarget = document.querySelector('.registration-form, .registration-card');
+    if (scrollTarget) {
+      scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [step]);
 
   useEffect(() => {
     const sessionId = searchParams.get('session_id');
