@@ -61,6 +61,20 @@ export default function RegistrationPage() {
   const [waiverScrolled, setWaiverScrolled] = useState(false);
   const [waiverConfirmed, setWaiverConfirmed] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>(null);
+  const [draftHydrated, setDraftHydrated] = useState(false);
+
+  function persistDraft(stepOverride?: Step) {
+    if (!id || paymentStatus === 'success') return;
+    const draft: RegistrationDraft = {
+      email,
+      attendees,
+      sameEmergencyContact,
+      waiverScrolled,
+      waiverConfirmed,
+      step: stepOverride ?? step,
+    };
+    window.sessionStorage.setItem(draftStorageKey, JSON.stringify(draft));
+  }
 
   function goToStep(nextStep: Step) {
     if (paymentStatus === 'cancelled') {
@@ -109,7 +123,10 @@ export default function RegistrationPage() {
   useEffect(() => {
     if (!id || paymentStatus === 'success') return;
     const rawDraft = window.sessionStorage.getItem(draftStorageKey);
-    if (!rawDraft) return;
+    if (!rawDraft) {
+      setDraftHydrated(true);
+      return;
+    }
 
     try {
       const parsed = JSON.parse(rawDraft) as Partial<RegistrationDraft>;
@@ -121,21 +138,19 @@ export default function RegistrationPage() {
       if (parsed.step === 1 || parsed.step === 2 || parsed.step === 3) setStep(parsed.step);
     } catch {
       window.sessionStorage.removeItem(draftStorageKey);
+    } finally {
+      setDraftHydrated(true);
     }
   }, [draftStorageKey, id, paymentStatus]);
 
   useEffect(() => {
-    if (!id || paymentStatus === 'success') return;
-    const draft: RegistrationDraft = {
-      email,
-      attendees,
-      sameEmergencyContact,
-      waiverScrolled,
-      waiverConfirmed,
-      step,
-    };
-    window.sessionStorage.setItem(draftStorageKey, JSON.stringify(draft));
-  }, [attendees, draftStorageKey, email, id, paymentStatus, sameEmergencyContact, step, waiverConfirmed, waiverScrolled]);
+    if (!id || paymentStatus === 'success' || !draftHydrated) return;
+    persistDraft();
+  }, [attendees, draftHydrated, draftStorageKey, email, id, paymentStatus, sameEmergencyContact, step, waiverConfirmed, waiverScrolled]);
+
+  useEffect(() => {
+    setDraftHydrated(false);
+  }, [id]);
 
   useEffect(() => {
     if (!id || paymentStatus !== 'success') return;
@@ -216,6 +231,7 @@ export default function RegistrationPage() {
       return;
     }
     if (attendees.some((attendee) => !attendee.waiver_accepted)) { setMessage('Each attendee must accept the waiver.'); return; }
+    persistDraft(3);
     setPaymentLoading(true); setMessage('');
 
     try {
