@@ -8,6 +8,14 @@ const emptyAttendee = () => ({ first_name: '', last_name: '', phone: '', birth_d
 type Attendee = ReturnType<typeof emptyAttendee>;
 type EventRecord = { id: string; starts_at: string; capacity: number; price: number; classes: { name: string; description: string | null } | null; locations: { name: string; city: string } | null };
 type Step = 1 | 2 | 3 | 4;
+type RegistrationDraft = {
+  email: string;
+  attendees: Attendee[];
+  sameEmergencyContact: boolean;
+  waiverScrolled: boolean;
+  waiverConfirmed: boolean;
+  step: Step;
+};
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_PATTERN = /^\(\d{3}\) \d{3}-\d{4}$/;
@@ -36,6 +44,7 @@ function formatPhone(value: string) {
 
 export default function RegistrationPage() {
   const { id } = useParams<{ id: string }>();
+  const draftStorageKey = `registration-draft:${id}`;
   const searchParams = useSearchParams();
   const [event, setEvent] = useState<EventRecord | null>(null);
   const [step, setStep] = useState<Step>(1);
@@ -77,6 +86,39 @@ export default function RegistrationPage() {
       });
   }, [id]);
   useEffect(() => { if (paymentResult) setStep(4); }, [paymentResult]);
+  useEffect(() => {
+    if (!id || paymentResult === 'success') return;
+    const rawDraft = window.sessionStorage.getItem(draftStorageKey);
+    if (!rawDraft) return;
+
+    try {
+      const parsed = JSON.parse(rawDraft) as Partial<RegistrationDraft>;
+      if (typeof parsed.email === 'string') setEmail(parsed.email);
+      if (Array.isArray(parsed.attendees) && parsed.attendees.length > 0) setAttendees(parsed.attendees as Attendee[]);
+      if (typeof parsed.sameEmergencyContact === 'boolean') setSameEmergencyContact(parsed.sameEmergencyContact);
+      if (typeof parsed.waiverScrolled === 'boolean') setWaiverScrolled(parsed.waiverScrolled);
+      if (typeof parsed.waiverConfirmed === 'boolean') setWaiverConfirmed(parsed.waiverConfirmed);
+      if (parsed.step === 1 || parsed.step === 2 || parsed.step === 3) setStep(parsed.step);
+    } catch {
+      window.sessionStorage.removeItem(draftStorageKey);
+    }
+  }, [draftStorageKey, id, paymentResult]);
+  useEffect(() => {
+    if (!id || paymentResult === 'success') return;
+    const draft: RegistrationDraft = {
+      email,
+      attendees,
+      sameEmergencyContact,
+      waiverScrolled,
+      waiverConfirmed,
+      step,
+    };
+    window.sessionStorage.setItem(draftStorageKey, JSON.stringify(draft));
+  }, [attendees, draftStorageKey, email, id, paymentResult, sameEmergencyContact, step, waiverConfirmed, waiverScrolled]);
+  useEffect(() => {
+    if (!id || paymentResult !== 'success') return;
+    window.sessionStorage.removeItem(draftStorageKey);
+  }, [draftStorageKey, id, paymentResult]);
   useEffect(() => {
     const sessionId = searchParams.get('session_id');
     if (paymentResult !== 'success' || !sessionId) return;

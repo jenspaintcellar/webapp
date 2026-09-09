@@ -24,8 +24,7 @@ export async function GET() {
       }];
     });
     return Response.json({ products, configured: true });
-  } catch (error) {
-    const detail = error instanceof Error ? error.message : 'Unknown Stripe error';
-    return Response.json({ products: [], configured: false, error: detail }, { status: 502 });
+  } catch {
+    return Response.json({ products: [], configured: false });
   }
 }

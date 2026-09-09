@@ -44,7 +44,7 @@ export async function POST(request: Request) {
   const origin = new URL(request.url).origin;
   try {
     const stripe = createStripeClient(stripeSecret);
-    const sessionPayload: Stripe.Checkout.SessionCreateParams = {
+    const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       customer_email: email,
       billing_address_collection: 'required',
@@ -58,19 +58,7 @@ export async function POST(request: Request) {
       },
       success_url: `${origin}/events/${body.eventId}?payment=success&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/events/${body.eventId}?payment=cancelled`,
-    };
-
-    let session: Stripe.Checkout.Session;
-    try {
-      session = await stripe.checkout.sessions.create(sessionPayload);
-    } catch (error) {
-      const stripeMessage = error instanceof Error ? error.message.toLowerCase() : '';
-      const taxNotConfigured = stripeMessage.includes('automatic_tax') || stripeMessage.includes('stripe tax');
-      if (!taxNotConfigured) throw error;
-      const fallbackPayload = { ...sessionPayload };
-      delete fallbackPayload.automatic_tax;
-      session = await stripe.checkout.sessions.create(fallbackPayload);
-    }
+    });
 
     if (!session.url) {
       return NextResponse.json({ error: 'Could not start secure payment right now.' }, { status: 502 });
@@ -79,7 +67,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ url: session.url });
   } catch (error) {
     console.error('Checkout session creation failed:', error);
-    const detail = error instanceof Error ? error.message : 'Unknown Stripe error';
-    return NextResponse.json({ error: `Secure checkout is temporarily unavailable. ${detail}` }, { status: 502 });
+    return NextResponse.json({ error: 'Secure checkout is temporarily unavailable. Please try again in a moment.' }, { status: 502 });
   }
 }
