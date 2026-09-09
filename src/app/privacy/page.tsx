@@ -2,12 +2,14 @@ import type { Metadata } from 'next';
 import SectionHeading from '@/components/SectionHeading';
 import { siteConfig } from '@/data/site';
 import styles from '../legal.module.css';
+import { buildPageMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: `Privacy Policy | ${siteConfig.name}`,
-  description: `How ${siteConfig.name} collects, uses, and protects your information.`,
-  alternates: { canonical: '/privacy' },
-};
+export const metadata: Metadata = buildPageMetadata({
+  title: 'Privacy Policy',
+  description: `How ${siteConfig.name} collects, uses, and protects personal information.`,
+  path: '/privacy',
+  keywords: ['privacy policy', 'data protection', 'booking privacy'],
+});
 
 export default function PrivacyPage() {
   return (

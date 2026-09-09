@@ -50,6 +50,23 @@
   margin-bottom: var(--spacing-md);
 }
 
+.social {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
+.social h4 {
+  margin-bottom: 0.25rem;
+}
+
+.socialIcons {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
 .nav ul,
 .contact ul {
   list-style: none;
@@ -92,6 +109,10 @@
   border-color: #fff;
   background: #1877f2;
   color: #fff;
+}
+
+.instagramIcon:hover {
+  background: linear-gradient(135deg, #fdc468 0%, #df4996 55%, #4f5bd5 100%);
 }
 
 .socialIcon:focus-visible {

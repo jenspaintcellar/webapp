@@ -32,7 +32,7 @@ export const siteConfig = {
   
   // Hero Section
   hero: {
-    headline: "Create Something Beautiful.",
+    headline: "Make Something Memorable.",
     subheadline: "Welcome to Jen's Paint Cellar. A professional art studio offering classes, private events, and creative experiences in downtown Salem.",
     image: "/logo.png",
   },
@@ -54,7 +54,7 @@ export const siteConfig = {
     email: "support@jenspaintcellar.com",
     hours: "[BUSINESS HOURS]",
     social: {
-      instagram: "[INSTAGRAM URL]",
+      instagram: "https://www.instagram.com/jenspaintcellar/",
       facebook: "https://www.facebook.com/paintcellar/",
     },
   },

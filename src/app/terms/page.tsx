@@ -2,12 +2,14 @@ import type { Metadata } from 'next';
 import SectionHeading from '@/components/SectionHeading';
 import { siteConfig } from '@/data/site';
 import styles from '../legal.module.css';
+import { buildPageMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: `Terms of Service | ${siteConfig.name}`,
-  description: `Terms of service for booking classes and events with ${siteConfig.name}.`,
-  alternates: { canonical: '/terms' },
-};
+export const metadata: Metadata = buildPageMetadata({
+  title: 'Terms of Service',
+  description: `Terms for bookings, classes, and events with ${siteConfig.name}.`,
+  path: '/terms',
+  keywords: ['terms of service', 'booking terms', 'class reservation terms'],
+});
 
 export default function TermsPage() {
   return (

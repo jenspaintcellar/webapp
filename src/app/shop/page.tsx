@@ -1,12 +1,14 @@
 import type { Metadata } from 'next';
 import ShopCatalog from '@/components/ShopCatalog';
 import styles from './shop.module.css';
+import { buildPageMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: "Shop | Jen's Paint Cellar",
-  description: 'Paint supplies, gifts, and handmade pieces from Jen\'s Paint Cellar.',
-  alternates: { canonical: '/shop' },
-};
+export const metadata: Metadata = buildPageMetadata({
+  title: 'Shop',
+  description: 'Shop paint supplies, gifts, and handmade items from Jen\'s Paint Cellar.',
+  path: '/shop',
+  keywords: ['paint supplies Salem Ohio', 'art gifts', 'handmade studio shop'],
+});
 
 export default function ShopPage() {
   return (

@@ -2,12 +2,14 @@ import type { Metadata } from 'next';
 import SectionHeading from '@/components/SectionHeading';
 import { siteConfig } from '@/data/site';
 import styles from '../legal.module.css';
+import { buildPageMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: `Refund Policy | ${siteConfig.name}`,
-  description: `Cancellation and refund policy for classes and events at ${siteConfig.name}.`,
-  alternates: { canonical: '/refund-policy' },
-};
+export const metadata: Metadata = buildPageMetadata({
+  title: 'Refund Policy',
+  description: `Cancellation, credit, and refund policy for classes and events at ${siteConfig.name}.`,
+  path: '/refund-policy',
+  keywords: ['refund policy', 'cancellation policy', 'class credit policy'],
+});
 
 export default function RefundPolicyPage() {
   return (
