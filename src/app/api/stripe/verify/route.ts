@@ -3,6 +3,7 @@ import Stripe from 'stripe';
 import { NextResponse } from 'next/server';
 import { finalizeBookingFromSession } from '@/lib/finalizeBooking';
 import { rejectUntrustedBrowserRequest } from '@/lib/requestSecurity';
+import { createStripeClient } from '@/lib/stripeClient';
 
 // Confirms a booking directly from the Checkout Session, so payment confirmation
 // doesn't depend on a webhook reaching this server (useful in local/sandbox testing
@@ -10,9 +11,9 @@ import { rejectUntrustedBrowserRequest } from '@/lib/requestSecurity';
 export async function POST(request: Request) {
   const rejectedRequest = rejectUntrustedBrowserRequest(request);
   if (rejectedRequest) return rejectedRequest;
-  const stripeSecret = process.env.STRIPE_SECRET_KEY || process.env.STRIPE_KEY;
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY;
+  const stripeSecret = (process.env.STRIPE_SECRET_KEY || process.env.STRIPE_KEY || '').trim();
+  const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '').trim();
+  const serviceKey = (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY || '').trim();
   if (!stripeSecret || !supabaseUrl || !serviceKey) {
     return NextResponse.json({ error: 'Payment is not configured yet. Missing Stripe or Supabase server credentials in deployment environment.' }, { status: 503 });
   }
@@ -20,7 +21,7 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => null) as { sessionId?: string } | null;
   if (!body?.sessionId || !/^cs_(test|live)_[a-zA-Z0-9]+$/.test(body.sessionId)) return NextResponse.json({ error: 'A valid session is required.' }, { status: 400 });
 
-  const stripe = new Stripe(stripeSecret);
+  const stripe = createStripeClient(stripeSecret);
   const session = await stripe.checkout.sessions.retrieve(body.sessionId);
   if (session.payment_status !== 'paid') return NextResponse.json({ confirmed: false });
 

@@ -147,11 +147,21 @@ export default function RegistrationPage() {
     }
     if (attendees.some((attendee) => !attendee.waiver_accepted)) { setMessage('Each attendee must accept the waiver.'); return; }
     setPaymentLoading(true); setMessage('');
-    const registrationAttendees = sameEmergencyContact ? attendees.map((attendee) => ({ ...attendee, emergency_contact_name: attendees[0].emergency_contact_name, emergency_contact_phone: attendees[0].emergency_contact_phone })) : attendees;
-    const response = await fetch('/api/registration/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ eventId: id, email, attendees: registrationAttendees }) });
-    const result = await response.json() as { url?: string; error?: string };
-    if (!response.ok || !result.url) { setMessage(result.error || 'Could not start secure payment.'); setPaymentLoading(false); return; }
-    window.location.href = result.url;
+
+    try {
+      const registrationAttendees = sameEmergencyContact ? attendees.map((attendee) => ({ ...attendee, emergency_contact_name: attendees[0].emergency_contact_name, emergency_contact_phone: attendees[0].emergency_contact_phone })) : attendees;
+      const response = await fetch('/api/registration/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ eventId: id, email, attendees: registrationAttendees }) });
+      const result = await response.json().catch(() => ({ error: 'Could not start secure payment.' })) as { url?: string; error?: string };
+      if (!response.ok || !result.url) {
+        setMessage(result.error || 'Could not start secure payment.');
+        setPaymentLoading(false);
+        return;
+      }
+      window.location.href = result.url;
+    } catch {
+      setMessage('Secure checkout is temporarily unavailable. Please try again.');
+      setPaymentLoading(false);
+    }
   }
 
   if (notFound) return <main className="registration-page"><h1>Class not found</h1><p>{message || 'This class is no longer available.'}</p><Link href="/#events">Back to events</Link></main>;

@@ -1,5 +1,6 @@
 import Stripe from 'stripe';
 import { rejectUntrustedBrowserRequest } from '@/lib/requestSecurity';
+import { createStripeClient } from '@/lib/stripeClient';
 
 export async function POST(request: Request) {
   const rejectedRequest = rejectUntrustedBrowserRequest(request);
@@ -10,7 +11,7 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => null) as { priceId?: string } | null;
   if (!body?.priceId || !/^price_[a-zA-Z0-9]+$/.test(body.priceId)) return Response.json({ error: 'Choose a valid product before checking out.' }, { status: 400 });
 
-  const stripe = new Stripe(secretKey);
+  const stripe = createStripeClient(secretKey);
   try {
     const price = await stripe.prices.retrieve(body.priceId);
     if (!price.active || price.type !== 'one_time') return Response.json({ error: 'That product is no longer available.' }, { status: 400 });

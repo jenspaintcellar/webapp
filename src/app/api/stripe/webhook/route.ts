@@ -2,19 +2,20 @@ import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 import { finalizeBookingFromSession } from '@/lib/finalizeBooking';
+import { createStripeClient } from '@/lib/stripeClient';
 
 export async function POST(request: Request) {
-  const secret = process.env.STRIPE_SECRET_KEY || process.env.STRIPE_KEY;
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || process.env.STRIPE_WEBHOOK_SIGNING_SECRET;
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY;
+  const secret = (process.env.STRIPE_SECRET_KEY || process.env.STRIPE_KEY || '').trim();
+  const webhookSecret = (process.env.STRIPE_WEBHOOK_SECRET || process.env.STRIPE_WEBHOOK_SIGNING_SECRET || '').trim();
+  const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '').trim();
+  const serviceKey = (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY || '').trim();
   if (!secret || !webhookSecret || !serviceKey || !supabaseUrl) {
     return NextResponse.json({ error: 'Stripe webhook is not configured.' }, { status: 503 });
   }
   const signature = request.headers.get('stripe-signature');
   if (!signature) return NextResponse.json({ error: 'Missing Stripe signature.' }, { status: 400 });
 
-  const stripe = new Stripe(secret);
+  const stripe = createStripeClient(secret);
   let event: Stripe.Event;
   try { event = stripe.webhooks.constructEvent(await request.text(), signature, webhookSecret); } catch { return NextResponse.json({ error: 'Invalid Stripe signature.' }, { status: 400 }); }
 

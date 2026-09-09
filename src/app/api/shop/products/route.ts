@@ -1,4 +1,5 @@
 import Stripe from 'stripe';
+import { createStripeClient } from '@/lib/stripeClient';
 
 export const dynamic = 'force-dynamic';
 
@@ -6,7 +7,7 @@ export async function GET() {
   const secretKey = process.env.STRIPE_SECRET_KEY || process.env.STRIPE_KEY;
   if (!secretKey) return Response.json({ products: [], configured: false });
 
-  const stripe = new Stripe(secretKey);
+  const stripe = createStripeClient(secretKey);
   try {
     const prices = await stripe.prices.list({ active: true, expand: ['data.product'], limit: 100 });
     const products = prices.data.flatMap((price: Stripe.Price) => {
@@ -23,7 +24,8 @@ export async function GET() {
       }];
     });
     return Response.json({ products, configured: true });
-  } catch {
-    return Response.json({ products: [], configured: false });
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : 'Unknown Stripe error';
+    return Response.json({ products: [], configured: false, error: detail }, { status: 502 });
   }
 }
