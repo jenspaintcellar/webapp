@@ -7,6 +7,10 @@ export type AttendeeInput = {
   emergency_contact_phone: string;
 };
 
+// Stripe metadata supports up to 50 keys; checkout metadata also stores non-attendee
+// keys, so keep attendee count below that limit.
+const MAX_ATTENDEES_PER_REGISTRATION = 47;
+
 export function calculateAge(birthDate: string) {
   const birth = new Date(`${birthDate}T00:00:00`);
   const today = new Date();
@@ -18,7 +22,7 @@ export function calculateAge(birthDate: string) {
 export function validateAttendees(attendees: AttendeeInput[]) {
   return Boolean(
     attendees.length &&
-    attendees.length <= 12 &&
+    attendees.length <= MAX_ATTENDEES_PER_REGISTRATION &&
     !attendees.some((attendee) =>
       !attendee.first_name?.trim() ||
       !attendee.last_name?.trim() ||

@@ -72,7 +72,7 @@ export default function RegistrationPage() {
   const [paymentSummary, setPaymentSummary] = useState<PaymentSummary | null>(null);
   const [draftHydrated, setDraftHydrated] = useState(false);
   const previousStepRef = useRef<Step>(step);
-  const maxAllowedAttendees = event ? Math.max(0, Math.min(event.spots_remaining ?? event.capacity, 12)) : 1;
+  const maxAllowedAttendees = event ? Math.max(0, event.spots_remaining ?? event.capacity) : 1;
 
   function persistDraft(stepOverride?: Step) {
     if (!id || paymentStatus === 'success') return;
